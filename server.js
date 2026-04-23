@@ -24,6 +24,89 @@ app.use(express.static('public'));
 // ---------- DB INIT ----------
 
 async function initDb() {
+  // Users
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS users (
+      id SERIAL PRIMARY KEY,
+      email VARCHAR(255) UNIQUE NOT NULL,
+      password_hash VARCHAR(255),
+      created_at TIMESTAMP DEFAULT NOW()
+    );
+  `);
+
+  // Profiles (Facebook-ähnlich)
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS profiles (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+      full_name VARCHAR(255),
+      username VARCHAR(50) UNIQUE,
+      avatar_url TEXT,
+      cover_url TEXT,
+      bio TEXT,
+      location VARCHAR(255),
+      website VARCHAR(255),
+      created_at TIMESTAMP DEFAULT NOW()
+    );
+  `);
+
+  // Friends
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS friends (
+      id SERIAL PRIMARY KEY,
+      requester_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+      addressee_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+      status VARCHAR(20) NOT NULL, -- pending, accepted, blocked
+      created_at TIMESTAMP DEFAULT NOW()
+    );
+  `);
+
+  // Posts
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS posts (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+      content TEXT NOT NULL,
+      image_url TEXT,
+      created_at TIMESTAMP DEFAULT NOW()
+    );
+  `);
+
+  // Comments
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS comments (
+      id SERIAL PRIMARY KEY,
+      post_id INTEGER REFERENCES posts(id) ON DELETE CASCADE,
+      user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+      content TEXT NOT NULL,
+      created_at TIMESTAMP DEFAULT NOW()
+    );
+  `);
+
+  // Likes
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS likes (
+      id SERIAL PRIMARY KEY,
+      post_id INTEGER REFERENCES posts(id) ON DELETE CASCADE,
+      user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+      created_at TIMESTAMP DEFAULT NOW(),
+      UNIQUE (post_id, user_id)
+    );
+  `);
+
+  // Notifications
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS notifications (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+      type VARCHAR(50), -- friend_request, like, comment, etc.
+      payload JSONB,
+      is_read BOOLEAN DEFAULT FALSE,
+      created_at TIMESTAMP DEFAULT NOW()
+    );
+  `);
+
+  // HS-Codes (wie bisher)
   await pool.query(`
     CREATE TABLE IF NOT EXISTS hs_codes (
       id SERIAL PRIMARY KEY,
@@ -59,7 +142,6 @@ app.get('/api/hs-codes', async (req, res) => {
 
     if (!q) return res.json([]);
 
-    // 1) DB-Suche
     const dbResult = await pool.query(
       `SELECT code, description, year
        FROM hs_codes
@@ -77,7 +159,6 @@ app.get('/api/hs-codes', async (req, res) => {
       source: "db"
     }));
 
-    // 2) JSON-Datei
     const fileData = loadHS(year);
 
     const fileMatches = fileData
@@ -92,7 +173,6 @@ app.get('/api/hs-codes', async (req, res) => {
         source: "file"
       }));
 
-    // 3) Merge ohne Duplikate
     const seen = new Set(dbMapped.map(x => x.code));
     const merged = [
       ...dbMapped,
@@ -105,6 +185,349 @@ app.get('/api/hs-codes', async (req, res) => {
     console.error("HS-Code Fehler:", e);
     res.status(500).json({ error: "Fehler bei der HS-Code Suche" });
   }
+});
+
+// ---------- USER & PROFILE API (Facebook-ähnlich, minimal) ----------
+
+// User anlegen (sehr simpel, ohne echte Auth-Logik)
+app.post('/api/users', async (req, res) => {
+  try {
+    const { email, full_name, username } = req.body;
+    if (!email) return res.status(400).json({ error: 'email erforderlich' });
+
+    const userResult = await pool.query(
+      `INSERT INTO users (email) VALUES ($1) RETURNING id, email, created_at`,
+      [email]
+    );
+
+    const user = userResult.rows[0];
+
+    const profileResult = await pool.query(
+      `INSERT INTO profiles (user_id, full_name, username)
+       VALUES ($1, $2, $3)
+       RETURNING id, user_id, full_name, username`,
+      [user.id, full_name || null, username || null]
+    );
+
+    res.json({ user, profile: profileResult.rows[0] });
+  } catch (e) {
+    console.error("User-Erstellung Fehler:", e);
+    res.status(500).json({ error: "Fehler bei der Benutzererstellung" });
+  }
+});
+
+// Profil abrufen
+app.get('/api/profiles/:username', async (req, res) => {
+  try {
+    const { username } = req.params;
+    const result = await pool.query(
+      `SELECT p.*, u.email
+       FROM profiles p
+       JOIN users u ON u.id = p.user_id
+       WHERE p.username = $1`,
+      [username]
+    );
+    if (result.rows.length === 0) return res.status(404).json({ error: 'Profil nicht gefunden' });
+    res.json(result.rows[0]);
+  } catch (e) {
+    console.error("Profil-Abruf Fehler:", e);
+    res.status(500).json({ error: "Fehler beim Abrufen des Profils" });
+  }
+});
+
+// Profil aktualisieren
+app.put('/api/profiles/:username', async (req, res) => {
+  try {
+    const { username } = req.params;
+    const { full_name, avatar_url, cover_url, bio, location, website } = req.body;
+
+    const result = await pool.query(
+      `UPDATE profiles
+       SET full_name = COALESCE($1, full_name),
+           avatar_url = COALESCE($2, avatar_url),
+           cover_url = COALESCE($3, cover_url),
+           bio = COALESCE($4, bio),
+           location = COALESCE($5, location),
+           website = COALESCE($6, website)
+       WHERE username = $7
+       RETURNING *`,
+      [full_name, avatar_url, cover_url, bio, location, website, username]
+    );
+
+    if (result.rows.length === 0) return res.status(404).json({ error: 'Profil nicht gefunden' });
+    res.json(result.rows[0]);
+  } catch (e) {
+    console.error("Profil-Update Fehler:", e);
+    res.status(500).json({ error: "Fehler beim Aktualisieren des Profils" });
+  }
+});
+
+// ---------- FRIENDS API (einfaches Freundschaftssystem) ----------
+
+// Freundschaftsanfrage senden
+app.post('/api/friends/request', async (req, res) => {
+  try {
+    const { requester_id, addressee_id } = req.body;
+    if (!requester_id || !addressee_id) {
+      return res.status(400).json({ error: 'requester_id und addressee_id erforderlich' });
+    }
+
+    const result = await pool.query(
+      `INSERT INTO friends (requester_id, addressee_id, status)
+       VALUES ($1, $2, 'pending')
+       RETURNING *`,
+      [requester_id, addressee_id]
+    );
+
+    await pool.query(
+      `INSERT INTO notifications (user_id, type, payload)
+       VALUES ($1, 'friend_request', $2)`,
+      [addressee_id, { from: requester_id }]
+    );
+
+    res.json(result.rows[0]);
+  } catch (e) {
+    console.error("Freundschaftsanfrage Fehler:", e);
+    res.status(500).json({ error: "Fehler bei der Freundschaftsanfrage" });
+  }
+});
+
+// Freundschaftsanfrage akzeptieren
+app.post('/api/friends/accept', async (req, res) => {
+  try {
+    const { request_id } = req.body;
+    if (!request_id) return res.status(400).json({ error: 'request_id erforderlich' });
+
+    const result = await pool.query(
+      `UPDATE friends
+       SET status = 'accepted'
+       WHERE id = $1
+       RETURNING *`,
+      [request_id]
+    );
+
+    if (result.rows.length === 0) return res.status(404).json({ error: 'Anfrage nicht gefunden' });
+    res.json(result.rows[0]);
+  } catch (e) {
+    console.error("Freundschaftsannahme Fehler:", e);
+    res.status(500).json({ error: "Fehler beim Akzeptieren der Freundschaft" });
+  }
+});
+
+// Freunde eines Users
+app.get('/api/friends/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const result = await pool.query(
+      `SELECT f.*, p.username, p.full_name, p.avatar_url
+       FROM friends f
+       JOIN profiles p
+         ON (p.user_id = f.requester_id AND f.addressee_id = $1)
+         OR (p.user_id = f.addressee_id AND f.requester_id = $1)
+       WHERE (f.requester_id = $1 OR f.addressee_id = $1)
+         AND f.status = 'accepted'`,
+      [userId]
+    );
+    res.json(result.rows);
+  } catch (e) {
+    console.error("Freundesliste Fehler:", e);
+    res.status(500).json({ error: "Fehler beim Abrufen der Freunde" });
+  }
+});
+
+// ---------- POSTS / COMMENTS / LIKES API ----------
+
+// Post erstellen
+app.post('/api/posts', async (req, res) => {
+  try {
+    const { user_id, content, image_url } = req.body;
+    if (!user_id || !content) return res.status(400).json({ error: 'user_id und content erforderlich' });
+
+    const result = await pool.query(
+      `INSERT INTO posts (user_id, content, image_url)
+       VALUES ($1, $2, $3)
+       RETURNING *`,
+      [user_id, content, image_url || null]
+    );
+
+    res.json(result.rows[0]);
+  } catch (e) {
+    console.error("Post-Erstellung Fehler:", e);
+    res.status(500).json({ error: "Fehler beim Erstellen des Posts" });
+  }
+});
+
+// Posts eines Users (Timeline)
+app.get('/api/posts/user/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const result = await pool.query(
+      `SELECT p.*, pr.username, pr.full_name, pr.avatar_url
+       FROM posts p
+       JOIN profiles pr ON pr.user_id = p.user_id
+       WHERE p.user_id = $1
+       ORDER BY p.created_at DESC
+       LIMIT 100`,
+      [userId]
+    );
+    res.json(result.rows);
+  } catch (e) {
+    console.error("User-Posts Fehler:", e);
+    res.status(500).json({ error: "Fehler beim Abrufen der Posts" });
+  }
+});
+
+// Globaler Feed (einfach)
+app.get('/api/posts/feed', async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT p.*, pr.username, pr.full_name, pr.avatar_url
+       FROM posts p
+       JOIN profiles pr ON pr.user_id = p.user_id
+       ORDER BY p.created_at DESC
+       LIMIT 100`
+    );
+    res.json(result.rows);
+  } catch (e) {
+    console.error("Feed Fehler:", e);
+    res.status(500).json({ error: "Fehler beim Abrufen des Feeds" });
+  }
+});
+
+// Kommentar erstellen
+app.post('/api/comments', async (req, res) => {
+  try {
+    const { post_id, user_id, content } = req.body;
+    if (!post_id || !user_id || !content) {
+      return res.status(400).json({ error: 'post_id, user_id und content erforderlich' });
+    }
+
+    const result = await pool.query(
+      `INSERT INTO comments (post_id, user_id, content)
+       VALUES ($1, $2, $3)
+       RETURNING *`,
+      [post_id, user_id, content]
+    );
+
+    res.json(result.rows[0]);
+  } catch (e) {
+    console.error("Kommentar-Erstellung Fehler:", e);
+    res.status(500).json({ error: "Fehler beim Erstellen des Kommentars" });
+  }
+});
+
+// Kommentare zu einem Post
+app.get('/api/comments/:postId', async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const result = await pool.query(
+      `SELECT c.*, pr.username, pr.full_name, pr.avatar_url
+       FROM comments c
+       JOIN profiles pr ON pr.user_id = c.user_id
+       WHERE c.post_id = $1
+       ORDER BY c.created_at ASC`,
+      [postId]
+    );
+    res.json(result.rows);
+  } catch (e) {
+    console.error("Kommentare-Abruf Fehler:", e);
+    res.status(500).json({ error: "Fehler beim Abrufen der Kommentare" });
+  }
+});
+
+// Like setzen
+app.post('/api/likes', async (req, res) => {
+  try {
+    const { post_id, user_id } = req.body;
+    if (!post_id || !user_id) return res.status(400).json({ error: 'post_id und user_id erforderlich' });
+
+    const result = await pool.query(
+      `INSERT INTO likes (post_id, user_id)
+       VALUES ($1, $2)
+       ON CONFLICT (post_id, user_id) DO NOTHING
+       RETURNING *`,
+      [post_id, user_id]
+    );
+
+    res.json(result.rows[0] || { status: 'already_liked' });
+  } catch (e) {
+    console.error("Like Fehler:", e);
+    res.status(500).json({ error: "Fehler beim Liken" });
+  }
+});
+
+// Likes eines Posts
+app.get('/api/likes/:postId', async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const result = await pool.query(
+      `SELECT l.*, pr.username, pr.full_name, pr.avatar_url
+       FROM likes l
+       JOIN profiles pr ON pr.user_id = l.user_id
+       WHERE l.post_id = $1`,
+      [postId]
+    );
+    res.json(result.rows);
+  } catch (e) {
+    console.error("Likes-Abruf Fehler:", e);
+    res.status(500).json({ error: "Fehler beim Abrufen der Likes" });
+  }
+});
+
+// ---------- NOTIFICATIONS API ----------
+
+app.get('/api/notifications/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const result = await pool.query(
+      `SELECT * FROM notifications
+       WHERE user_id = $1
+       ORDER BY created_at DESC
+       LIMIT 100`,
+      [userId]
+    );
+    res.json(result.rows);
+  } catch (e) {
+    console.error("Notifications Fehler:", e);
+    res.status(500).json({ error: "Fehler beim Abrufen der Benachrichtigungen" });
+  }
+});
+
+// ---------- ZOLL-NEWS API (repariert, statische News) ----------
+
+app.get('/api/news', (req, res) => {
+  // Hier könntest du später echte Feeds parsen.
+  // Für jetzt: funktionierende, statische Zoll-News.
+  const news = [
+    {
+      id: 1,
+      title: "Aktuelle Änderungen im EU-Zolltarif",
+      source: "EU-Kommission",
+      date: "2026-04-20",
+      category: "Zolltarif",
+      summary: "Neue Anpassungen im Bereich Elektronik und Maschinen wurden veröffentlicht.",
+      link: "#"
+    },
+    {
+      id: 2,
+      title: "Digitalisierung der Zollabwicklung",
+      source: "Bundeszollverwaltung",
+      date: "2026-04-18",
+      category: "Digitalisierung",
+      summary: "Elektronische Anmeldungen und automatisierte Prüfungen werden weiter ausgebaut.",
+      link: "#"
+    },
+    {
+      id: 3,
+      title: "Neue Compliance-Anforderungen für Importeure",
+      source: "WTO",
+      date: "2026-04-15",
+      category: "Compliance",
+      summary: "Strengere Dokumentationspflichten für bestimmte Warengruppen treten in Kraft.",
+      link: "#"
+    }
+  ];
+  res.json(news);
 });
 
 // ---------- START ----------
