@@ -180,5 +180,57 @@ async function searchHSHome() {
   }
 }
 </script>
+
+<script>
+function renderCalendar() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth(); // 0 = Januar
+  const today = now.getDate();
+
+  const monthNames = [
+    "Januar", "Februar", "März", "April", "Mai", "Juni",
+    "Juli", "August", "September", "Oktober", "November", "Dezember"
+  ];
+
+  // Monatstitel setzen
+  document.getElementById("cal-month").textContent = monthNames[month] + " " + year;
+
+  // Ersten Tag des Monats bestimmen
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  // In JS ist Sonntag = 0 → wir wollen Montag = 1
+  const startOffset = firstDay === 0 ? 6 : firstDay - 1;
+
+  const grid = document.getElementById("calendar-grid");
+  grid.innerHTML = "";
+
+  // Leere Felder vor dem 1. Tag
+  for (let i = 0; i < startOffset; i++) {
+    const emptyCell = document.createElement("div");
+    emptyCell.classList.add("calendar-cell");
+    grid.appendChild(emptyCell);
+  }
+
+  // Tage einfügen
+  for (let day = 1; day <= daysInMonth; day++) {
+    const cell = document.createElement("div");
+    cell.classList.add("calendar-cell");
+    cell.textContent = day;
+
+    if (day === today) {
+      cell.classList.add("today");
+    }
+
+    grid.appendChild(cell);
+  }
+}
+
+// Kalender beim Laden rendern
+document.addEventListener("DOMContentLoaded", renderCalendar);
+</script>
+
+  
 </body>
 </html>
