@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>LUDARA – Profil</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="top-header">
+    <div class="logo">LUDARA AI</div>
+    <div class="login-box">
+        <input type="text" placeholder="Benutzername">
+        <input type="password" placeholder="Passwort">
+        <button class="btn-blue">Login</button>
+    </div>
+</header>
+
+<nav class="main-nav">
+    <a href="index.html">HOME</a>
+    <a href="profile.html" class="active">PROFIL</a>
+    <a href="news.html">ZOLL-NEWS</a>
+    <a href="feed.html">COMMUNITY</a>
+    <a href="hs.html">HS-CODES</a>
+</nav>
+
+<section class="content-grid profile-grid">
+    <div class="profile-main">
+        <div class="profile-header">
+            <div class="profile-cover"></div>
+            <div class="profile-info">
+                <div class="profile-avatar"></div>
+                <div>
+                    <h2 id="profile-name">Profilname</h2>
+                    <p id="profile-username">@username</p>
+                    <p id="profile-bio"></p>
+                    <p id="profile-location"></p>
+                    <p id="profile-website"></p>
+                </div>
+            </div>
+        </div>
+
+        <h3>Beiträge</h3>
+        <div class="post-create">
+            <textarea id="post-content" placeholder="Was gibt es Neues?"></textarea>
+            <button class="btn-blue" onclick="createPost()">Posten</button>
+        </div>
+        <div id="profile-posts"></div>
+    </div>
+
+    <aside class="profile-sidebar">
+        <h3>Freunde</h3>
+        <div id="friends-list"></div>
+    </aside>
+</section>
+
+<footer class="footer">
+    <p>© 2026 LUDARA AI – Profil</p>
+</footer>
+
+<script src="js/app.js"></script>
+<script>
+    // Beispiel: statisch ein Username, später aus Login/URL
+    loadProfile("demo");
+</script>
+</body>
+</html>
