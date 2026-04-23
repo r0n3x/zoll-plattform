@@ -190,7 +190,7 @@ app.put('/api/profile/me', authMiddleware, async (req, res) => {
   res.json({ message: 'Profil aktualisiert' });
 });
 
-// ------------------ HS-CODE: LOKAL + ONLINE + AI + DUTIES ------------------
+// ------------------ HS-CODE: LOKAL + ONLINE (UN COMTRADE) + AI + DUTIES ------------------
 
 app.get('/api/hs-codes', async (req, res) => {
   try {
@@ -211,36 +211,41 @@ app.get('/api/hs-codes', async (req, res) => {
       [q]
     );
 
-    // 2) Online-Suche (zolltarifnummern.de)
-    const url = `https://www.zolltarifnummern.de/api/v1/cnSuggest?term=${encodeURIComponent(q)}&lang=de&year=2026`;
-    const response = await fetch(url);
-    const onlineData = await response.json();
-
-    const online = (onlineData || [])
-      .map(item => ({
-        code: item.cn || item.code || '',
-        description: item.text || item.description || '',
-        source: 'online'
-      }))
-      .filter(x => x.code && x.description);
-
-    // 3) Autosave in DB
-    for (const item of online) {
-      await pool.query(
-        'INSERT INTO hs_codes (code, description) VALUES ($1,$2) ON CONFLICT (code) DO NOTHING',
-        [item.code, item.description]
-      );
-    }
-
-    // 4) Zusammenführen
     const localMapped = local.rows.map(r => ({
       code: r.code,
       description: r.description,
       source: 'local'
     }));
 
+    // 2) Online-Suche über UN Comtrade (stabil, JSON)
+    let onlineMapped = [];
+    try {
+      const url = `https://comtradeapi.un.org/public/v1/preview/hs?search=${encodeURIComponent(q)}`;
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (data && data.data) {
+        onlineMapped = data.data.map(item => ({
+          code: item.cmdCode,
+          description: item.cmdDesc,
+          source: 'online'
+        }));
+      }
+
+      // Autosave
+      for (const item of onlineMapped) {
+        await pool.query(
+          'INSERT INTO hs_codes (code, description) VALUES ($1,$2) ON CONFLICT (code) DO NOTHING',
+          [item.code, item.description]
+        );
+      }
+    } catch (e) {
+      console.error('Online HS Fehler:', e.message);
+    }
+
+    // 3) Merge
     const seen = new Set(localMapped.map(x => x.code));
-    const merged = [...localMapped, ...online.filter(x => !seen.has(x.code))];
+    const merged = [...localMapped, ...onlineMapped.filter(x => !seen.has(x.code))];
 
     res.json(merged);
   } catch (e) {
@@ -255,17 +260,15 @@ app.get('/api/hs-codes/ai', async (req, res) => {
     const term = req.query.term || '';
     if (!term) return res.json([]);
 
-    const url = `https://www.zolltarifnummern.de/api/v2/cnSuggest?term=${encodeURIComponent(term)}&lang=en`;
+    const url = `https://comtradeapi.un.org/public/v1/preview/hs?search=${encodeURIComponent(term)}`;
     const response = await fetch(url);
     const data = await response.json();
 
-    const results = (data || [])
-      .map(item => ({
-        code: item.cn || item.code || '',
-        description: item.text || item.description || '',
-        score: item.score || null
-      }))
-      .filter(x => x.code);
+    const results = (data.data || []).map(item => ({
+      code: item.cmdCode,
+      description: item.cmdDesc,
+      score: item.score || null
+    }));
 
     res.json(results);
   } catch (e) {
@@ -280,7 +283,7 @@ app.get('/api/hs-codes/duties', async (req, res) => {
     const code = req.query.code;
     if (!code) return res.status(400).json({ error: 'code fehlt' });
 
-    const url = `https://www.zolltarifnummern.de/api/v1/cnDuties?term=${encodeURIComponent(code)}&year=2026`;
+    const url = `https://comtradeapi.un.org/public/v1/preview/hs?cmdCode=${encodeURIComponent(code)}`;
     const response = await fetch(url);
     const data = await response.json();
 
