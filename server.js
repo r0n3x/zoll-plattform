@@ -53,7 +53,7 @@ let nextPostId = 1;
 let hsCodes = [];
 
 try {
-  const hsPath = path.join(__dirname, "data", "hs", "hs_2026.json");
+  const hsPath = path.join(__dirname, "data", "hs", "data/hs/hs_2026.json");
   const raw = fs.readFileSync(hsPath, "utf8");
   hsCodes = JSON.parse(raw);
 
