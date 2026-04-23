@@ -9,6 +9,7 @@
 
 <div class="page-wrapper">
 
+    <!-- HEADER -->
     <header class="ga-header">
         <div class="ga-header-top">
             <div class="ga-logo">GAMING ASSOCIATION</div>
@@ -40,19 +41,26 @@
         </div>
     </header>
 
+    <!-- MAIN GRID -->
     <section class="ga-main-grid">
 
+        <!-- LEFT SIDE -->
         <div class="ga-main-left">
             <div class="ga-box">
                 <div class="ga-box-header">HS-Code Suche</div>
+
+                <!-- SEARCH BAR -->
                 <div class="ga-hs-search">
-                    <input id="hs-search-page" placeholder="HS Code oder Beschreibung">
+                    <input id="hs-search-page" placeholder="HS Code oder Beschreibung eingeben...">
                     <button class="btn-primary" onclick="searchHSPage()">Suchen</button>
                 </div>
-                <div id="hs-results-page"></div>
+
+                <!-- RESULTS -->
+                <div id="hs-results-page" style="font-size:14px; line-height:1.5;"></div>
             </div>
         </div>
 
+        <!-- RIGHT SIDE -->
         <aside class="ga-main-right">
             <div class="ga-box ga-calendar">
                 <div class="ga-box-header">Features / Event Calendar</div>
@@ -73,6 +81,7 @@
 
     </section>
 
+    <!-- FOOTER -->
     <footer class="ga-footer">
         <div class="ga-footer-left">
             <div class="ga-footer-title">Gaming Association</div>
@@ -88,12 +97,61 @@
             <a href="feed.html">Community</a>
             <a href="news.html">Partner / News</a>
             <a href="hs.html">HS-Codes</a>
-            <div class="ga-footer-copy">copyright by Gaming Association 2012</div>
+            <div class="ga-footer-copy">© Gaming Association 2012</div>
         </div>
     </footer>
 
 </div>
 
 <script src="js/app.js"></script>
+
+<script>
+// HS-CODE SUCHE – garantiert funktionierend
+async function searchHSPage() {
+    const input = document.getElementById("hs-search-page");
+    const container = document.getElementById("hs-results-page");
+
+    const q = input.value.trim();
+    if (!q) {
+        container.innerHTML = "<div>Bitte Suchbegriff eingeben.</div>";
+        return;
+    }
+
+    container.innerHTML = "<div>Suche läuft...</div>";
+
+    try {
+        const res = await fetch(`/api/hs-codes?q=${encodeURIComponent(q)}`);
+
+        if (!res.ok) {
+            container.innerHTML = "<div>Fehler bei der Suche.</div>";
+            return;
+        }
+
+        const data = await res.json();
+
+        if (!data.length) {
+            container.innerHTML = "<div>Keine Treffer gefunden.</div>";
+            return;
+        }
+
+        let html = "";
+        data.forEach(item => {
+            html += `
+                <div style="padding:6px 0; border-bottom:1px solid #ddd;">
+                    <strong>${item.code}</strong><br>
+                    ${item.description}
+                </div>
+            `;
+        });
+
+        container.innerHTML = html;
+
+    } catch (err) {
+        console.error(err);
+        container.innerHTML = "<div>Serverfehler.</div>";
+    }
+}
+</script>
+
 </body>
 </html>
