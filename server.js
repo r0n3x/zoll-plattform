@@ -1,5 +1,3 @@
-const fs = require('fs');
-const path = require('path');
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
@@ -11,6 +9,8 @@ const jwt = require('jsonwebtoken');
 const { Pool } = require('pg');
 const RSSParser = require('rss-parser');
 const fetch = require('node-fetch');
+const fs = require('fs');
+const path = require('path');
 
 dotenv.config();
 
@@ -39,27 +39,57 @@ app.use(express.static('public'));
 
 async function initDb() {
   await pool.query(`
-    CREATE TABLE IF NOT EXISTS users (...);
+    CREATE TABLE IF NOT EXISTS users (
+      id SERIAL PRIMARY KEY,
+      public_id VARCHAR(20) UNIQUE,
+      email VARCHAR(255) UNIQUE NOT NULL,
+      password_hash VARCHAR(255) NOT NULL,
+      created_at TIMESTAMP DEFAULT NOW()
+    );
   `);
 
   await pool.query(`
-    CREATE TABLE IF NOT EXISTS profiles (...);
+    CREATE TABLE IF NOT EXISTS profiles (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+      full_name VARCHAR(255),
+      avatar_url TEXT,
+      bio TEXT,
+      location VARCHAR(255)
+    );
   `);
 
   await pool.query(`
-    CREATE TABLE IF NOT EXISTS hs_codes (...);
+    CREATE TABLE IF NOT EXISTS hs_codes (
+      id SERIAL PRIMARY KEY,
+      code VARCHAR(20) UNIQUE,
+      description TEXT NOT NULL,
+      created_at TIMESTAMP DEFAULT NOW()
+    );
   `);
 
   await pool.query(`
-    CREATE TABLE IF NOT EXISTS chat_messages (...);
+    CREATE TABLE IF NOT EXISTS chat_messages (
+      id SERIAL PRIMARY KEY,
+      room VARCHAR(255) NOT NULL,
+      user_id INTEGER REFERENCES users(id),
+      message TEXT NOT NULL,
+      created_at TIMESTAMP DEFAULT NOW()
+    );
   `);
 
   await pool.query(`
-    CREATE TABLE IF NOT EXISTS games_scores (...);
+    CREATE TABLE IF NOT EXISTS games_scores (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER REFERENCES users(id),
+      game_key VARCHAR(50),
+      score INTEGER,
+      created_at TIMESTAMP DEFAULT NOW()
+    );
   `);
 }
 
-// ------------------ HS-DATEI LADEN (HIER EINFÜGEN) ------------------
+// ------------------ HS-DATEI LADEN ------------------
 
 function loadHS(year = "2026") {
   try {
@@ -73,12 +103,7 @@ function loadHS(year = "2026") {
   }
 }
 
-// ------------------ ROUTEN STARTEN ------------------
-
-app.get('/api/hs-codes', async (req, res) => {
-  ...
-});
-
+// ------------------ AUTH ------------------
 
 function generatePublicId(id) {
   return `1.${String(id).padStart(3, '0')}`;
@@ -102,8 +127,6 @@ function authMiddleware(req, res, next) {
     res.status(401).json({ error: 'Ungültiger Token' });
   }
 }
-
-// ------------------ AUTH ------------------
 
 app.post('/api/auth/register', async (req, res) => {
   try {
@@ -183,107 +206,57 @@ app.put('/api/profile/me', authMiddleware, async (req, res) => {
   res.json({ message: 'Profil aktualisiert' });
 });
 
-// ------------------ HS-CODE: LOKAL + ONLINE (UN COMTRADE) + AI + DUTIES ------------------
+// ------------------ HS-CODE FINDER (Datei + DB) ------------------
 
 app.get('/api/hs-codes', async (req, res) => {
   try {
     const q = req.query.q || '';
+    const year = req.query.year || '2026';
+
     if (!q) return res.json([]);
 
-    // 1) Lokale Volltextsuche
+    // 1) Lokale DB-Suche
     const local = await pool.query(
-      `SELECT code, description,
-        ts_rank_cd(
-          to_tsvector('german', coalesce(code,'') || ' ' || coalesce(description,'')),
-          plainto_tsquery('german', $1)
-        ) AS rank
+      `SELECT code, description
        FROM hs_codes
-       WHERE to_tsvector('german', coalesce(code,'') || ' ' || coalesce(description,'')) @@ plainto_tsquery('german', $1)
-       ORDER BY rank DESC
-       LIMIT 20`,
-      [q]
+       WHERE code ILIKE $1 OR description ILIKE $1
+       ORDER BY code
+       LIMIT 50`,
+      [`%${q}%`]
     );
 
     const localMapped = local.rows.map(r => ({
       code: r.code,
       description: r.description,
-      source: 'local'
+      source: "local"
     }));
 
-    // 2) Online-Suche über UN Comtrade (stabil, JSON)
-    let onlineMapped = [];
-    try {
-      const url = `https://comtradeapi.un.org/public/v1/preview/hs?search=${encodeURIComponent(q)}`;
-      const response = await fetch(url);
-      const data = await response.json();
+    // 2) HS-Datei laden
+    const hsData = loadHS(year);
 
-      if (data && data.data) {
-        onlineMapped = data.data.map(item => ({
-          code: item.cmdCode,
-          description: item.cmdDesc,
-          source: 'online'
-        }));
-      }
+    const fileMatches = hsData
+      .filter(item =>
+        item.code.includes(q) ||
+        item.description.toLowerCase().includes(q.toLowerCase())
+      )
+      .map(item => ({
+        code: item.code,
+        description: item.description,
+        source: "file"
+      }));
 
-      // Autosave
-      for (const item of onlineMapped) {
-        await pool.query(
-          'INSERT INTO hs_codes (code, description) VALUES ($1,$2) ON CONFLICT (code) DO NOTHING',
-          [item.code, item.description]
-        );
-      }
-    } catch (e) {
-      console.error('Online HS Fehler:', e.message);
-    }
-
-    // 3) Merge
+    // 3) Merge ohne Duplikate
     const seen = new Set(localMapped.map(x => x.code));
-    const merged = [...localMapped, ...onlineMapped.filter(x => !seen.has(x.code))];
+    const merged = [
+      ...localMapped,
+      ...fileMatches.filter(x => !seen.has(x.code))
+    ];
 
     res.json(merged);
+
   } catch (e) {
-    console.error('HS-Code Fehler:', e);
-    res.status(500).json({ error: 'HS-Code Fehler' });
-  }
-});
-
-// AI / Semantische Suche
-app.get('/api/hs-codes/ai', async (req, res) => {
-  try {
-    const term = req.query.term || '';
-    if (!term) return res.json([]);
-
-    const url = `https://comtradeapi.un.org/public/v1/preview/hs?search=${encodeURIComponent(term)}`;
-    const response = await fetch(url);
-    const data = await response.json();
-
-    const results = (data.data || []).map(item => ({
-      code: item.cmdCode,
-      description: item.cmdDesc,
-      score: item.score || null
-    }));
-
-    res.json(results);
-  } catch (e) {
-    console.error('AI Fehler:', e);
-    res.status(500).json({ error: 'AI Fehler' });
-  }
-});
-
-// Zollsätze (Duties)
-app.get('/api/hs-codes/duties', async (req, res) => {
-  try {
-    const code = req.query.code;
-    if (!code) return res.status(400).json({ error: 'code fehlt' });
-
-    const url = `https://comtradeapi.un.org/public/v1/preview/hs?cmdCode=${encodeURIComponent(code)}`;
-    const response = await fetch(url);
-    const data = await response.json();
-
-    res.json(data);
-  } catch (e) {
-    console.error('Duties Fehler:', e);
-    res.status(500).json({ error: 'Duties Fehler' });
+    console.error("HS-Code Fehler:", e);
+    res.status(500).json({ error: "Fehler bei der HS-Code Suche" });
   }
 });
 
