@@ -1,3 +1,5 @@
+const fs = require('fs');
+const path = require('path');
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
@@ -37,55 +39,46 @@ app.use(express.static('public'));
 
 async function initDb() {
   await pool.query(`
-    CREATE TABLE IF NOT EXISTS users (
-      id SERIAL PRIMARY KEY,
-      public_id VARCHAR(20) UNIQUE,
-      email VARCHAR(255) UNIQUE NOT NULL,
-      password_hash VARCHAR(255) NOT NULL,
-      created_at TIMESTAMP DEFAULT NOW()
-    );
+    CREATE TABLE IF NOT EXISTS users (...);
   `);
 
   await pool.query(`
-    CREATE TABLE IF NOT EXISTS profiles (
-      id SERIAL PRIMARY KEY,
-      user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-      full_name VARCHAR(255),
-      avatar_url TEXT,
-      bio TEXT,
-      location VARCHAR(255)
-    );
+    CREATE TABLE IF NOT EXISTS profiles (...);
   `);
 
   await pool.query(`
-    CREATE TABLE IF NOT EXISTS hs_codes (
-      id SERIAL PRIMARY KEY,
-      code VARCHAR(20) UNIQUE,
-      description TEXT NOT NULL,
-      created_at TIMESTAMP DEFAULT NOW()
-    );
+    CREATE TABLE IF NOT EXISTS hs_codes (...);
   `);
 
   await pool.query(`
-    CREATE TABLE IF NOT EXISTS chat_messages (
-      id SERIAL PRIMARY KEY,
-      room VARCHAR(255) NOT NULL,
-      user_id INTEGER REFERENCES users(id),
-      message TEXT NOT NULL,
-      created_at TIMESTAMP DEFAULT NOW()
-    );
+    CREATE TABLE IF NOT EXISTS chat_messages (...);
   `);
 
   await pool.query(`
-    CREATE TABLE IF NOT EXISTS games_scores (
-      id SERIAL PRIMARY KEY,
-      user_id INTEGER REFERENCES users(id),
-      game_key VARCHAR(50),
-      score INTEGER,
-      created_at TIMESTAMP DEFAULT NOW()
-    );
+    CREATE TABLE IF NOT EXISTS games_scores (...);
   `);
 }
+
+// ------------------ HS-DATEI LADEN (HIER EINFÜGEN) ------------------
+
+function loadHS(year = "2026") {
+  try {
+    const filePath = path.join(__dirname, "data", "hs", `hs_${year}.json`);
+    if (!fs.existsSync(filePath)) return [];
+    const raw = fs.readFileSync(filePath, "utf8");
+    return JSON.parse(raw);
+  } catch (e) {
+    console.error("Fehler beim Laden der HS-Datei:", e);
+    return [];
+  }
+}
+
+// ------------------ ROUTEN STARTEN ------------------
+
+app.get('/api/hs-codes', async (req, res) => {
+  ...
+});
+
 
 function generatePublicId(id) {
   return `1.${String(id).padStart(3, '0')}`;
