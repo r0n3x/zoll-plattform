@@ -1,6 +1,6 @@
-/* ==============
-   LUDARA UI – Apple x Social
-   ============== */
+/* ============================
+   LUDARA UI – Apple × Social
+   ============================ */
 
 :root {
   --bg-main: #f5f5f7;
@@ -18,6 +18,8 @@
     "Segoe UI", sans-serif;
 }
 
+/* Reset */
+
 *,
 *::before,
 *::after {
@@ -31,7 +33,9 @@ body {
   color: var(--text-main);
 }
 
-/* Layout */
+/* ============================
+   Layout
+   ============================ */
 
 .app-shell {
   display: grid;
@@ -39,7 +43,9 @@ body {
   min-height: 100vh;
 }
 
-/* Sidebar */
+/* ============================
+   Sidebar
+   ============================ */
 
 .sidebar {
   background: #ffffff;
@@ -50,16 +56,21 @@ body {
   gap: 24px;
 }
 
+/* LOGO – schön dargestellt */
 .sidebar-logo {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .sidebar-logo img {
-  height: 40px;
-  width: 40px;
-  border-radius: 12px;
+  height: 48px;
+  width: 48px;
+  border-radius: 14px;
+  object-fit: contain;
+  background: radial-gradient(circle at 30% 20%, #ffffff, #dfe9ff);
+  padding: 4px;
+  box-shadow: 0 4px 12px rgba(0, 148, 255, 0.25);
 }
 
 .sidebar-logo-text {
@@ -70,13 +81,15 @@ body {
 .sidebar-logo-title {
   font-weight: 700;
   letter-spacing: 0.04em;
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .sidebar-logo-sub {
   font-size: 11px;
   color: var(--text-muted);
 }
+
+/* Navigation */
 
 .nav-section-title {
   font-size: 11px;
@@ -96,11 +109,12 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 8px 10px;
+  padding: 9px 12px;
   border-radius: 12px;
   color: var(--text-main);
   text-decoration: none;
   font-size: 14px;
+  transition: 0.15s;
 }
 
 .nav-link span.icon {
@@ -114,10 +128,7 @@ body {
 .nav-link.active {
   background: linear-gradient(90deg, var(--accent-blue), var(--accent-blue-soft));
   color: #ffffff;
-}
-
-.nav-link.active span.icon {
-  opacity: 0.9;
+  box-shadow: 0 4px 12px rgba(0, 148, 255, 0.3);
 }
 
 .sidebar-footer {
@@ -126,7 +137,9 @@ body {
   color: var(--text-muted);
 }
 
-/* Topbar */
+/* ============================
+   Topbar
+   ============================ */
 
 .main-area {
   display: flex;
@@ -188,6 +201,7 @@ body {
   color: #ffffff;
   background: linear-gradient(90deg, var(--accent-blue), var(--accent-blue-soft));
   box-shadow: 0 4px 10px rgba(0, 148, 255, 0.3);
+  transition: 0.15s;
 }
 
 .btn-primary:hover {
@@ -210,7 +224,9 @@ body {
   text-decoration: underline;
 }
 
-/* Content */
+/* ============================
+   Content
+   ============================ */
 
 .content {
   padding: 24px;
@@ -225,7 +241,9 @@ body {
   margin: 0 auto;
 }
 
-/* Cards */
+/* ============================
+   Cards
+   ============================ */
 
 .card {
   background: var(--bg-card);
@@ -251,7 +269,9 @@ body {
   color: var(--text-muted);
 }
 
-/* Hero */
+/* ============================
+   Hero
+   ============================ */
 
 .hero {
   display: flex;
@@ -260,19 +280,21 @@ body {
 }
 
 .hero-logo {
-  height: 64px;
-  width: 64px;
+  height: 72px;
+  width: 72px;
   border-radius: 18px;
-  background: radial-gradient(circle at 30% 20%, #ffffff, #001428);
+  background: radial-gradient(circle at 30% 20%, #ffffff, #dfe9ff);
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 148, 255, 0.25);
 }
 
 .hero-logo img {
-  max-width: 100%;
-  max-height: 100%;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .hero-text-title {
@@ -286,7 +308,9 @@ body {
   margin-top: 4px;
 }
 
-/* Lists / Feed */
+/* ============================
+   Lists / Feed
+   ============================ */
 
 .list {
   display: flex;
@@ -313,7 +337,7 @@ body {
   color: var(--text-muted);
 }
 
-/* Feed */
+/* Feed composer */
 
 .feed-compose {
   display: flex;
@@ -344,7 +368,9 @@ body {
   justify-content: flex-end;
 }
 
-/* Profile */
+/* ============================
+   Profile
+   ============================ */
 
 .profile-header {
   display: flex;
@@ -406,7 +432,9 @@ body {
   color: var(--accent-blue);
 }
 
-/* HS Search */
+/* ============================
+   HS Search
+   ============================ */
 
 .hs-search-bar {
   display: flex;
@@ -450,7 +478,9 @@ body {
   color: var(--text-muted);
 }
 
-/* Calendar (simple widget) */
+/* ============================
+   Calendar
+   ============================ */
 
 .calendar {
   font-size: 12px;
@@ -483,20 +513,9 @@ body {
   font-weight: 600;
 }
 
-/* News */
-
-.news-item-title {
-  font-weight: 600;
-  margin-bottom: 2px;
-}
-
-.news-item-meta {
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-bottom: 4px;
-}
-
-/* Responsive */
+/* ============================
+   Responsive
+   ============================ */
 
 @media (max-width: 960px) {
   .app-shell {
