@@ -259,7 +259,6 @@ body {
     border-radius: 3px;
 }
 
-/* Platzhalter-Bilder */
 .ga-article-image.neymar {
     background: linear-gradient(135deg, #f9d976, #f39f86);
 }
@@ -422,13 +421,8 @@ body {
 
 /* POST CREATE */
 
-.ga-post-create textarea,
-#ga-hs-search-page,
-#hs-search-page {
-    width: 100%;
-}
-
 .ga-post-create textarea {
+    width: 100%;
     min-height: 70px;
     margin-bottom: 6px;
 }
