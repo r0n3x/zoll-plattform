@@ -242,33 +242,7 @@ async function createProfilePost() {
     }
 }
 
-// NEWS (Startseite & News-Seite)
-async function loadNews() {
-    try {
-        const res = await fetch("/api/news");
-        if (!res.ok) return;
-        const data = await res.json();
-
-        const container = document.getElementById("news-container");
-        if (!container) return;
-
-        let html = "";
-        data.forEach(n => {
-            html += `
-                <div class="ga-twitter-item">
-                    <p><strong>${n.title}</strong><br>
-                    <small>${n.date} – ${n.source}</small></p>
-                    <p>${n.summary}</p>
-                </div>
-            `;
-        });
-
-        container.innerHTML = html;
-    } catch (e) {
-        console.error(e);
-    }
-}
-
+// NEWS (News-Seite)
 async function loadNewsPage() {
     try {
         const res = await fetch("/api/news");
@@ -297,7 +271,7 @@ async function loadNewsPage() {
     }
 }
 
-// HS-Suche (Startseite optional, HS-Seite)
+// HS-Suche (HS-Seite)
 async function searchHSPage() {
     const input = document.getElementById("hs-search-page");
     if (!input) return;
@@ -323,10 +297,9 @@ async function searchHSPage() {
     }
 }
 
-// Auto-Init für Seiten
+// Auto-Init für Startseite
 document.addEventListener("DOMContentLoaded", () => {
     if (document.getElementById("feed-container")) {
         loadFeed();
-        loadNews(); // optional News in Startseite
     }
 });
