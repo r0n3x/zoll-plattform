@@ -186,32 +186,45 @@ app.get('/api/auth/me', authMiddleware, async (req, res) => {
 app.get('/api/hs-codes', async (req, res) => {
   try {
     const q = req.query.q || '';
-    const result = await pool.query(
-      'SELECT * FROM hs_codes WHERE code ILIKE $1 OR description ILIKE $1 ORDER BY code LIMIT 50',
+
+    // 1) Lokale Datenbank durchsuchen
+    const local = await pool.query(
+      'SELECT * FROM hs_codes WHERE code ILIKE $1 OR description ILIKE $1 ORDER BY code LIMIT 20',
       [`%${q}%`]
     );
-    res.json(result.rows);
+
+    // 2) Online-Suche (exchangerate.host/tax)
+    const url = `https://api.exchangerate.host/tax?search=${encodeURIComponent(q)}`;
+    const response = await fetch(url);
+    const onlineData = await response.json();
+
+    let online = [];
+    if (onlineData && onlineData.rates) {
+      online = onlineData.rates.map(item => ({
+        code: item.code,
+        description: item.description,
+        source: "online"
+      }));
+    }
+
+    // 3) Lokale + Online Ergebnisse kombinieren
+    const combined = [
+      ...local.rows.map(r => ({
+        code: r.code,
+        description: r.description,
+        source: "local"
+      })),
+      ...online
+    ];
+
+    res.json(combined);
+
   } catch (e) {
     console.error(e);
-    res.status(500).json({ error: 'Serverfehler' });
+    res.status(500).json({ error: 'Fehler bei der HS-Code Suche' });
   }
 });
 
-app.post('/api/hs-codes', authMiddleware, async (req, res) => {
-  try {
-    const { code, description } = req.body;
-    if (!code || !description) return res.status(400).json({ error: 'Code und Beschreibung erforderlich' });
-
-    const result = await pool.query(
-      'INSERT INTO hs_codes (code, description, created_by) VALUES ($1, $2, $3) RETURNING *',
-      [code, description, req.user.id]
-    );
-    res.json(result.rows[0]);
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ error: 'Serverfehler' });
-  }
-});
 
 // ---------- Währungs- & Zollwertrechner ----------
 
