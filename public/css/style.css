@@ -97,3 +97,72 @@ body {
     text-align: center;
     margin-top: 40px;
 }
+
+.profile-grid {
+    grid-template-columns: 3fr 1fr;
+}
+
+.profile-header {
+    background: var(--hellblau);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.profile-cover {
+    height: 120px;
+    background: linear-gradient(90deg, var(--beige), var(--hellblau));
+}
+
+.profile-info {
+    display: flex;
+    gap: 15px;
+    padding: 15px;
+    align-items: center;
+}
+
+.profile-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--hellgrau);
+    border: 3px solid var(--weiß);
+}
+
+.profile-sidebar {
+    background: var(--weiß);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.post-create textarea {
+    width: 100%;
+    min-height: 70px;
+    margin-bottom: 10px;
+}
+
+.post {
+    border-bottom: 1px solid var(--hellgrau);
+    padding: 10px 0;
+}
+
+.news-item {
+    border-bottom: 1px solid var(--hellgrau);
+    padding: 10px 0;
+}
+
+.single-column {
+    grid-template-columns: 1fr;
+}
+
+.hs-search-box {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.hs-search-box input {
+    flex: 1;
+    padding: 6px;
+}
