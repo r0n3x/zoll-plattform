@@ -60,15 +60,6 @@ async function initDb() {
   `);
 
   await pool.query(`
-    CREATE TABLE IF NOT EXISTS hs_codes (
-      id SERIAL PRIMARY KEY,
-      code VARCHAR(20) UNIQUE,
-      description TEXT NOT NULL,
-      created_at TIMESTAMP DEFAULT NOW()
-    );
-  `);
-
-  await pool.query(`
     CREATE TABLE IF NOT EXISTS chat_messages (
       id SERIAL PRIMARY KEY,
       room VARCHAR(255) NOT NULL,
@@ -87,7 +78,20 @@ async function initDb() {
       created_at TIMESTAMP DEFAULT NOW()
     );
   `);
+
+  // ✅ HIER IST SCHRITT 1 — HS-DATENBANK
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS hs_codes (
+      id SERIAL PRIMARY KEY,
+      code VARCHAR(20) NOT NULL,
+      description TEXT NOT NULL,
+      year VARCHAR(4) NOT NULL,
+      source VARCHAR(20) DEFAULT 'import',
+      created_at TIMESTAMP DEFAULT NOW()
+    );
+  `);
 }
+
 
 // ------------------ HS-DATEI LADEN ------------------
 
