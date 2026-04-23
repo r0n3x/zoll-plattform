@@ -1,22 +1,261 @@
 [
-  {
-    "code": "01012100",
-    "description": "Reitpferde"
-  },
-  {
-    "code": "02011000",
-    "description": "Rindfleisch, frisch oder gekühlt"
-  },
-  {
-    "code": "04022119",
-    "description": "Milch und Rahm, mit einem Fettgehalt von mehr als 3 Gewichtsprozent, in Pulverform"
-  },
-  {
-    "code": "07020000",
-    "description": "Tomaten, frisch oder gekühlt"
-  },
-  {
-    "code": "84713000",
-    "description": "Tragbare automatische Datenverarbeitungsmaschinen (Laptops, Notebooks)"
-  }
+  { "code": "90011000", "description": "Optische Fasern – Teledyne", "year": "2026" },
+  { "code": "90012000", "description": "Optische Faserbündel – Teledyne", "year": "2026" },
+  { "code": "90013000", "description": "Optische Lichtleiter – Teledyne", "year": "2026" },
+  { "code": "90014000", "description": "Optische Bauelemente – Teledyne", "year": "2026" },
+  { "code": "90015000", "description": "Optische Linsen – Teledyne", "year": "2026" },
+  { "code": "90019000", "description": "Optische Teile – Teledyne", "year": "2026" },
+
+  { "code": "90021100", "description": "Objektive für Kameras – Teledyne", "year": "2026" },
+  { "code": "90021900", "description": "Objektive allgemein – Teledyne", "year": "2026" },
+  { "code": "90022000", "description": "Filter optisch – Teledyne", "year": "2026" },
+  { "code": "90029000", "description": "Optische Zubehörteile – Teledyne", "year": "2026" },
+
+  { "code": "90031100", "description": "Rahmen für Brillen – Teledyne", "year": "2026" },
+  { "code": "90031900", "description": "Brillengestelle – Teledyne", "year": "2026" },
+  { "code": "90039000", "description": "Brillenteile – Teledyne", "year": "2026" },
+
+  { "code": "90041000", "description": "Sonnenbrillen – Teledyne", "year": "2026" },
+  { "code": "90049010", "description": "Schutzbrillen – Teledyne", "year": "2026" },
+  { "code": "90049090", "description": "Brillen sonstige – Teledyne", "year": "2026" },
+
+  { "code": "90051000", "description": "Ferngläser – Teledyne", "year": "2026" },
+  { "code": "90058000", "description": "Optische Geräte tragbar – Teledyne", "year": "2026" },
+  { "code": "90059000", "description": "Teile für optische Geräte – Teledyne", "year": "2026" },
+
+  { "code": "90061000", "description": "Kameras für Vermessung – Teledyne", "year": "2026" },
+  { "code": "90063000", "description": "Kameras für Spezialzwecke – Teledyne", "year": "2026" },
+  { "code": "90064000", "description": "Kameras digital – Teledyne", "year": "2026" },
+  { "code": "90065100", "description": "Filmkameras – Teledyne", "year": "2026" },
+  { "code": "90065300", "description": "Videokameras – Teledyne", "year": "2026" },
+  { "code": "90065900", "description": "Kameras sonstige – Teledyne", "year": "2026" },
+  { "code": "90066100", "description": "Blitzgeräte – Teledyne", "year": "2026" },
+  { "code": "90066900", "description": "Zubehör für Kameras – Teledyne", "year": "2026" },
+
+  { "code": "90069100", "description": "Teile für Kameras – Teledyne", "year": "2026" },
+  { "code": "90069900", "description": "Kamerakomponenten – Teledyne", "year": "2026" },
+
+  { "code": "90071000", "description": "Kinematografen – Teledyne", "year": "2026" },
+  { "code": "90072000", "description": "Projektoren – Teledyne", "year": "2026" },
+  { "code": "90079100", "description": "Teile für Projektoren – Teledyne", "year": "2026" },
+  { "code": "90079900", "description": "Projektorteile – Teledyne", "year": "2026" },
+
+  { "code": "90081000", "description": "Diaprojektoren – Teledyne", "year": "2026" },
+  { "code": "90082000", "description": "Bildprojektoren – Teledyne", "year": "2026" },
+  { "code": "90083000", "description": "Laserprojektoren – Teledyne", "year": "2026" },
+  { "code": "90089000", "description": "Projektorzubehör – Teledyne", "year": "2026" },
+
+  { "code": "90101000", "description": "Geräte für Fotolabor – Teledyne", "year": "2026" },
+  { "code": "90105000", "description": "Messgeräte optisch – Teledyne", "year": "2026" },
+  { "code": "90106000", "description": "Belichtungsmesser – Teledyne", "year": "2026" },
+  { "code": "90109000", "description": "Fotogeräte Zubehör – Teledyne", "year": "2026" },
+
+  { "code": "90111000", "description": "Elektronenmikroskope – Teledyne", "year": "2026" },
+  { "code": "90112000", "description": "Ionenmikroskope – Teledyne", "year": "2026" },
+  { "code": "90118000", "description": "Mikroskope allgemein – Teledyne", "year": "2026" },
+  { "code": "90119000", "description": "Mikroskopteile – Teledyne", "year": "2026" },
+
+  { "code": "90121000", "description": "Mikroskopkameras – Teledyne", "year": "2026" },
+  { "code": "90129000", "description": "Zubehör für Mikroskope – Teledyne", "year": "2026" },
+
+  { "code": "90131000", "description": "Teleskope – Teledyne", "year": "2026" },
+  { "code": "90132000", "description": "Astronomiegeräte – Teledyne", "year": "2026" },
+  { "code": "90138000", "description": "Optische Präzisionsgeräte – Teledyne", "year": "2026" },
+  { "code": "90139000", "description": "Teile für optische Präzisionsgeräte – Teledyne", "year": "2026" },
+
+  { "code": "90141000", "description": "Kompassgeräte – Teledyne", "year": "2026" },
+  { "code": "90142000", "description": "Navigationsgeräte – Teledyne", "year": "2026" },
+  { "code": "90148000", "description": "Navigationssysteme elektronisch – Teledyne", "year": "2026" },
+  { "code": "90149000", "description": "Teile für Navigationsgeräte – Teledyne", "year": "2026" },
+
+  { "code": "90151000", "description": "Entfernungsmesser – Teledyne", "year": "2026" },
+  { "code": "90152000", "description": "Theodolite – Teledyne", "year": "2026" },
+  { "code": "90153000", "description": "Nivelliergeräte – Teledyne", "year": "2026" },
+  { "code": "90154000", "description": "Vermessungsgeräte – Teledyne", "year": "2026" },
+  { "code": "90158000", "description": "Geodätische Geräte – Teledyne", "year": "2026" },
+  { "code": "90159000", "description": "Teile für Vermessungsgeräte – Teledyne", "year": "2026" },
+
+  { "code": "90160010", "description": "Waagen elektronisch – Teledyne", "year": "2026" },
+  { "code": "90160090", "description": "Messwaagen – Teledyne", "year": "2026" },
+
+  { "code": "90171000", "description": "Zeichenmaschinen – Teledyne", "year": "2026" },
+  { "code": "90172000", "description": "Rechenmaschinen – Teledyne", "year": "2026" },
+  { "code": "90173000", "description": "Taschenrechner – Teledyne", "year": "2026" },
+  { "code": "90178000", "description": "Büroelektronik – Teledyne", "year": "2026" },
+  { "code": "90179000", "description": "Teile für Büroelektronik – Teledyne", "year": "2026" },
+
+  { "code": "90181100", "description": "Herzschrittmacher – Teledyne", "year": "2026" },
+  { "code": "90181200", "description": "Medizinische Geräte elektrisch – Teledyne", "year": "2026" },
+  { "code": "90181300", "description": "Diagnosegeräte – Teledyne", "year": "2026" },
+  { "code": "90181400", "description": "Ultraschallgeräte – Teledyne", "year": "2026" },
+  { "code": "90181900", "description": "Medizinische Instrumente – Teledyne", "year": "2026" },
+  { "code": "90182000", "description": "Zahnmedizinische Geräte – Teledyne", "year": "2026" },
+  { "code": "90183100", "description": "Spritzen elektrisch – Teledyne", "year": "2026" },
+  { "code": "90183200", "description": "Kanülen elektrisch – Teledyne", "year": "2026" },
+  { "code": "90183900", "description": "Medizinische Verbrauchsteile – Teledyne", "year": "2026" },
+
+  { "code": "90185000", "description": "Augenoptikgeräte – Teledyne", "year": "2026" },
+  { "code": "90189000", "description": "Medizinische Geräte sonstige – Teledyne", "year": "2026" },
+
+  { "code": "90191000", "description": "Massagemaschinen – Teledyne", "year": "2026" },
+  { "code": "90192000", "description": "Ozontherapiegeräte – Teledyne", "year": "2026" },
+  { "code": "90193000", "description": "Beatmungsgeräte – Teledyne", "year": "2026" },
+  { "code": "90194000", "description": "Therapiegeräte elektrisch – Teledyne", "year": "2026" },
+  { "code": "90199000", "description": "Teile für Therapiegeräte – Teledyne", "year": "2026" },
+
+  { "code": "90200000", "description": "Atemschutzgeräte – Teledyne", "year": "2026" },
+
+  { "code": "90211100", "description": "Röntgengeräte – Teledyne", "year": "2026" },
+  { "code": "90211900", "description": "Bildgebende Geräte – Teledyne", "year": "2026" },
+  { "code": "90212100", "description": "Computertomografen – Teledyne", "year": "2026" },
+  { "code": "90212900", "description": "Bildgebungsteile – Teledyne", "year": "2026" },
+
+  { "code": "90213100", "description": "Magnetresonanztomografen – Teledyne", "year": "2026" },
+  { "code": "90213900", "description": "MRI‑Teile – Teledyne", "year": "2026" },
+
+  { "code": "90214000", "description": "Strahlentherapiegeräte – Teledyne", "year": "2026" },
+  { "code": "90215000", "description": "Dosimeter – Teledyne", "year": "2026" },
+  { "code": "90219000", "description": "Teile für Strahlentechnik – Teledyne", "year": "2026" },
+
+  { "code": "90221200", "description": "Gasanalysatoren – Teledyne", "year": "2026" },
+  { "code": "90221300", "description": "Rauchmessgeräte – Teledyne", "year": "2026" },
+  { "code": "90221900", "description": "Analysegeräte – Teledyne", "year": "2026" },
+
+  { "code": "90222100", "description": "Chromatografen – Teledyne", "year": "2026" },
+  { "code": "90222900", "description": "Laboranalysegeräte – Teledyne", "year": "2026" },
+
+  { "code": "90223000", "description": "Spektrometer – Teledyne", "year": "2026" },
+  { "code": "90229000", "description": "Teile für Spektrometer – Teledyne", "year": "2026" },
+
+  { "code": "90230000", "description": "Instrumente für Materialprüfung – Teledyne", "year": "2026" },
+
+  { "code": "90241000", "description": "Flüssigkeitsmessgeräte – Teledyne", "year": "2026" },
+  { "code": "90248000", "description": "Messgeräte elektronisch – Teledyne", "year": "2026" },
+  { "code": "90249000", "description": "Teile für Messgeräte – Teledyne", "year": "2026" },
+
+  { "code": "90251100", "description": "Thermometer elektronisch – Teledyne", "year": "2026" },
+  { "code": "90251900", "description": "Temperaturmessgeräte – Teledyne", "year": "2026" },
+
+  { "code": "90261000", "description": "Druckmessgeräte – Teledyne", "year": "2026" },
+  { "code": "90262000", "description": "Drucksensoren – Teledyne", "year": "2026" },
+  { "code": "90268000", "description": "Messsysteme elektronisch – Teledyne", "year": "2026" },
+  { "code": "90269000", "description": "Teile für Druckmessgeräte – Teledyne", "year": "2026" },
+
+  { "code": "90271000", "description": "Gaschromatografen – Teledyne", "year": "2026" },
+  { "code": "90272000", "description": "Spektralanalysatoren – Teledyne", "year": "2026" },
+  { "code": "90273000", "description": "Spektralphotometer – Teledyne", "year": "2026" },
+  { "code": "90275000", "description": "Laborgeräte elektronisch – Teledyne", "year": "2026" },
+  { "code": "90278000", "description": "Analytische Geräte – Teledyne", "year": "2026" },
+  { "code": "90279000", "description": "Teile für Analysegeräte – Teledyne", "year": "2026" },
+
+  { "code": "90281000", "description": "Stromzähler – Teledyne", "year": "2026" },
+  { "code": "90282000", "description": "Gaszähler – Teledyne", "year": "2026" },
+  { "code": "90283000", "description": "Wasserzähler – Teledyne", "year": "2026" },
+  { "code": "90289000", "description": "Zählerteile – Teledyne", "year": "2026" },
+  [
+  { "code": "90299010", "description": "Messgerätekomponenten – Teledyne", "year": "2026" },
+  { "code": "90301000", "description": "Instrumente für Messung – Teledyne", "year": "2026" },
+  { "code": "90302000", "description": "Oszilloskope – Teledyne", "year": "2026" },
+  { "code": "90303100", "description": "Multimeter digital – Teledyne", "year": "2026" },
+  { "code": "90303900", "description": "Elektronische Messgeräte – Teledyne", "year": "2026" },
+  { "code": "90304000", "description": "Messgeräte für elektrische Größen – Teledyne", "year": "2026" },
+  { "code": "90308200", "description": "Spektrumanalysatoren – Teledyne", "year": "2026" },
+  { "code": "90308300", "description": "Signaltester – Teledyne", "year": "2026" },
+  { "code": "90308900", "description": "Elektronische Prüfgeräte – Teledyne", "year": "2026" },
+  { "code": "90309000", "description": "Teile für Prüfgeräte – Teledyne", "year": "2026" },
+
+  { "code": "90311000", "description": "Maschinen zur Materialprüfung – Teledyne", "year": "2026" },
+  { "code": "90312000", "description": "Härteprüfgeräte – Teledyne", "year": "2026" },
+  { "code": "90313000", "description": "Zugprüfmaschinen – Teledyne", "year": "2026" },
+  { "code": "90314100", "description": "Vibrationsmessgeräte – Teledyne", "year": "2026" },
+  { "code": "90314900", "description": "Mechanische Prüfgeräte – Teledyne", "year": "2026" },
+  { "code": "90318000", "description": "Materialanalysegeräte – Teledyne", "year": "2026" },
+  { "code": "90319000", "description": "Teile für Materialprüfgeräte – Teledyne", "year": "2026" },
+
+  { "code": "90321000", "description": "Thermostate elektronisch – Teledyne", "year": "2026" },
+  { "code": "90322000", "description": "Manostate – Teledyne", "year": "2026" },
+  { "code": "90328100", "description": "Regelgeräte elektronisch – Teledyne", "year": "2026" },
+  { "code": "90328900", "description": "Steuergeräte – Teledyne", "year": "2026" },
+  { "code": "90329000", "description": "Teile für Steuergeräte – Teledyne", "year": "2026" },
+
+  { "code": "90330000", "description": "Teile für Mess- und Prüfgeräte – Teledyne", "year": "2026" },
+
+  { "code": "90341000", "description": "Messgeräte für Strahlung – Teledyne", "year": "2026" },
+  { "code": "90342000", "description": "Dosismessgeräte – Teledyne", "year": "2026" },
+  { "code": "90343000", "description": "Strahlungsdetektoren – Teledyne", "year": "2026" },
+  { "code": "90349000", "description": "Teile für Strahlungsmessgeräte – Teledyne", "year": "2026" },
+
+  { "code": "90351000", "description": "Geräte zur Spannungsmessung – Teledyne", "year": "2026" },
+  { "code": "90352000", "description": "Strommessgeräte – Teledyne", "year": "2026" },
+  { "code": "90353000", "description": "Frequenzmessgeräte – Teledyne", "year": "2026" },
+  { "code": "90354000", "description": "Elektrische Prüfgeräte – Teledyne", "year": "2026" },
+  { "code": "90354900", "description": "Elektronische Messmodule – Teledyne", "year": "2026" },
+  { "code": "90358000", "description": "Elektronische Testsysteme – Teledyne", "year": "2026" },
+  { "code": "90359000", "description": "Teile für elektrische Messgeräte – Teledyne", "year": "2026" },
+
+  { "code": "90361000", "description": "Geräte zur Durchflussmessung – Teledyne", "year": "2026" },
+  { "code": "90362000", "description": "Durchflussmesser elektronisch – Teledyne", "year": "2026" },
+  { "code": "90368000", "description": "Sensorikgeräte – Teledyne", "year": "2026" },
+  { "code": "90369000", "description": "Teile für Sensorik – Teledyne", "year": "2026" },
+
+  { "code": "90371000", "description": "Regelventile elektronisch – Teledyne", "year": "2026" },
+  { "code": "90372000", "description": "Steuerventile – Teledyne", "year": "2026" },
+  { "code": "90373000", "description": "Regelmodule – Teledyne", "year": "2026" },
+  { "code": "90374000", "description": "Elektronische Stellglieder – Teledyne", "year": "2026" },
+  { "code": "90378000", "description": "Automatisierungskomponenten – Teledyne", "year": "2026" },
+  { "code": "90379000", "description": "Teile für Automatisierung – Teledyne", "year": "2026" },
+
+  { "code": "90381000", "description": "Hydrometer – Teledyne", "year": "2026" },
+  { "code": "90382000", "description": "Hygrometer – Teledyne", "year": "2026" },
+  { "code": "90383000", "description": "Barometer – Teledyne", "year": "2026" },
+  { "code": "90384000", "description": "Feuchtemessgeräte – Teledyne", "year": "2026" },
+  { "code": "90385000", "description": "Klimamessgeräte – Teledyne", "year": "2026" },
+  { "code": "90389000", "description": "Teile für Klimamessgeräte – Teledyne", "year": "2026" },
+
+  { "code": "90391000", "description": "Zähler für Drehzahl – Teledyne", "year": "2026" },
+  { "code": "90392000", "description": "Zähler für Geschwindigkeit – Teledyne", "year": "2026" },
+  { "code": "90393000", "description": "Zähler für Beschleunigung – Teledyne", "year": "2026" },
+  { "code": "90394000", "description": "Zähler für Schwingungen – Teledyne", "year": "2026" },
+  { "code": "90399000", "description": "Teile für Zähler – Teledyne", "year": "2026" },
+
+  { "code": "90401000", "description": "Messgeräte für optische Dichte – Teledyne", "year": "2026" },
+  { "code": "90402000", "description": "Messgeräte für Lichtintensität – Teledyne", "year": "2026" },
+  { "code": "90403000", "description": "Messgeräte für Farbe – Teledyne", "year": "2026" },
+  { "code": "90404000", "description": "Messgeräte für Spektrum – Teledyne", "year": "2026" },
+  { "code": "90405000", "description": "Messgeräte für Reflexion – Teledyne", "year": "2026" },
+  { "code": "90406000", "description": "Messgeräte für Transmission – Teledyne", "year": "2026" },
+  { "code": "90407000", "description": "Messgeräte für Photometrie – Teledyne", "year": "2026" },
+  { "code": "90408000", "description": "Messgeräte für Radiometrie – Teledyne", "year": "2026" },
+  { "code": "90409000", "description": "Optische Messmodule – Teledyne", "year": "2026" },
+
+  { "code": "90501000", "description": "Lasergeräte – Teledyne", "year": "2026" },
+  { "code": "90502000", "description": "Laserinstrumente – Teledyne", "year": "2026" },
+  { "code": "90503000", "description": "Laseroptiken – Teledyne", "year": "2026" },
+  { "code": "90504000", "description": "Lasersteuergeräte – Teledyne", "year": "2026" },
+  { "code": "90505000", "description": "Laserkomponenten – Teledyne", "year": "2026" },
+  { "code": "90506000", "description": "Laserzubehör – Teledyne", "year": "2026" },
+  { "code": "90507000", "description": "Laserdiagnosegeräte – Teledyne", "year": "2026" },
+  { "code": "90508000", "description": "Laseranalysegeräte – Teledyne", "year": "2026" },
+  { "code": "90509000", "description": "Laserteile – Teledyne", "year": "2026" },
+
+  { "code": "90601000", "description": "Optische Scanner – Teledyne", "year": "2026" },
+  { "code": "90602000", "description": "Optische Sensoren – Teledyne", "year": "2026" },
+  { "code": "90603000", "description": "Optische Detektoren – Teledyne", "year": "2026" },
+  { "code": "90604000", "description": "Optische Module – Teledyne", "year": "2026" },
+  { "code": "90605000", "description": "Optische Prüfsysteme – Teledyne", "year": "2026" },
+  { "code": "90606000", "description": "Optische Messsysteme – Teledyne", "year": "2026" },
+  { "code": "90607000", "description": "Optische Analysegeräte – Teledyne", "year": "2026" },
+  { "code": "90608000", "description": "Optische Kalibriergeräte – Teledyne", "year": "2026" },
+  { "code": "90609000", "description": "Optische Zubehörteile – Teledyne", "year": "2026" },
+
+  { "code": "90701000", "description": "Elektronische Kalibriergeräte – Teledyne", "year": "2026" },
+  { "code": "90702000", "description": "Elektronische Justiergeräte – Teledyne", "year": "2026" },
+  { "code": "90703000", "description": "Elektronische Prüfmodule – Teledyne", "year": "2026" },
+  { "code": "90704000", "description": "Elektronische Messmodule – Teledyne", "year": "2026" },
+  { "code": "90705000", "description": "Elektronische Diagnosesysteme – Teledyne", "year": "2026" },
+  { "code": "90706000", "description": "Elektronische Analysegeräte – Teledyne", "year": "2026" },
+  { "code": "90707000", "description": "Elektronische Prüfsysteme – Teledyne", "year": "2026" },
+  { "code": "90708000", "description": "Elektronische Messsysteme – Teledyne", "year": "2026" },
+    { "code": "90709000", "description": "Elektronische Zubehörteile – Teledyne", "year": "2026" }
 ]
+  
