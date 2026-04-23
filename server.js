@@ -1,6 +1,14 @@
+// ===============================
+//  GAMING ASSOCIATION BACKEND
+//  Voll funktionsfähig
+//  Mit HS-2026 JSON Loader
+// ===============================
+
 const express = require("express");
 const cors = require("cors");
 const bcrypt = require("bcryptjs");
+const fs = require("fs");
+const path = require("path");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -9,11 +17,15 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
 
-// ===== In-Memory "Datenbank" =====
-let users = [];          // { id, email, passwordHash, full_name, username }
-let profiles = [];       // { user_id, full_name, username, bio, location, website }
-let posts = [];          // { id, user_id, content, created_at }
-let friends = [];        // { user_id, friend_id }
+// ===============================
+//  IN-MEMORY DATENBANK
+// ===============================
+
+let users = [];
+let profiles = [];
+let posts = [];
+let friends = [];
+
 let news = [
   {
     id: 1,
@@ -31,32 +43,43 @@ let news = [
   }
 ];
 
-let hsCodes = [
-  { code: "0101", description: "Lebende Pferde" },
-  { code: "0102", description: "Lebende Rinder" },
-  { code: "0201", description: "Rindfleisch, frisch oder gekühlt" },
-  { code: "0202", description: "Rindfleisch, gefroren" },
-  { code: "8471", description: "Datenverarbeitungsmaschinen (Computer)" }
-];
-
 let nextUserId = 1;
 let nextPostId = 1;
 
-// ===== AUTH =====
+// ===============================
+//  HS-CODE DATENBANK LADEN
+// ===============================
 
+let hsCodes = [];
+
+try {
+  const hsPath = path.join(__dirname, "data", "hs", "hs_2026.json");
+  const raw = fs.readFileSync(hsPath, "utf8");
+  hsCodes = JSON.parse(raw);
+
+  console.log("HS-Datenbank geladen:", hsCodes.length, "Einträge");
+} catch (err) {
+  console.error("Fehler beim Laden der HS-Datenbank:", err);
+}
+
+// ===============================
+//  AUTH
+// ===============================
+
+// Registrierung
 app.post("/api/auth/register", async (req, res) => {
   try {
     const { email, password, full_name, username } = req.body;
-    if (!email || !password) {
-      return res.status(400).json({ error: "E-Mail und Passwort erforderlich" });
-    }
 
-    const existing = users.find(u => u.email === email);
-    if (existing) {
+    if (!email || !password)
+      return res.status(400).json({ error: "E-Mail und Passwort erforderlich" });
+
+    const exists = users.find(u => u.email === email);
+    if (exists)
       return res.status(400).json({ error: "E-Mail bereits registriert" });
-    }
 
     const passwordHash = await bcrypt.hash(password, 10);
+
     const user = {
       id: nextUserId++,
       email,
@@ -64,6 +87,7 @@ app.post("/api/auth/register", async (req, res) => {
       full_name: full_name || "",
       username: username || `user${Date.now()}`
     };
+
     users.push(user);
 
     profiles.push({
@@ -75,54 +99,60 @@ app.post("/api/auth/register", async (req, res) => {
       website: ""
     });
 
-    return res.status(201).json({ message: "Registrierung erfolgreich" });
+    res.status(201).json({ message: "Registrierung erfolgreich" });
+
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ error: "Serverfehler bei Registrierung" });
+    res.status(500).json({ error: "Serverfehler bei Registrierung" });
   }
 });
 
+// Login
 app.post("/api/auth/login", async (req, res) => {
   try {
     const { email, password } = req.body;
+
     const user = users.find(u => u.email === email);
-    if (!user) {
+    if (!user)
       return res.status(401).json({ error: "Ungültige Zugangsdaten" });
-    }
 
     const ok = await bcrypt.compare(password, user.passwordHash);
-    if (!ok) {
+    if (!ok)
       return res.status(401).json({ error: "Ungültige Zugangsdaten" });
-    }
 
-    return res.json({
+    res.json({
       user: {
         id: user.id,
         email: user.email,
         full_name: user.full_name,
         username: user.username
       },
-      profile: profiles.find(p => p.user_id === user.id) || null
+      profile: profiles.find(p => p.user_id === user.id)
     });
+
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ error: "Serverfehler bei Login" });
+    res.status(500).json({ error: "Serverfehler bei Login" });
   }
 });
 
-// ===== PROFILE =====
+// ===============================
+//  PROFILE
+// ===============================
 
 app.get("/api/profiles/:username", (req, res) => {
-  const username = req.params.username;
-  const profile = profiles.find(p => p.username === username);
-  if (!profile) {
+  const profile = profiles.find(p => p.username === req.params.username);
+  if (!profile)
     return res.status(404).json({ error: "Profil nicht gefunden" });
-  }
-  return res.json(profile);
+
+  res.json(profile);
 });
 
-// ===== POSTS =====
+// ===============================
+//  POSTS
+// ===============================
 
+// Feed
 app.get("/api/posts/feed", (req, res) => {
   const result = posts
     .slice()
@@ -135,12 +165,15 @@ app.get("/api/posts/feed", (req, res) => {
         username: user?.username || ""
       };
     });
-  return res.json(result);
+
+  res.json(result);
 });
 
+// Posts eines Users
 app.get("/api/posts/user/:id", (req, res) => {
-  const userId = parseInt(req.params.id, 10);
-  const userPosts = posts
+  const userId = parseInt(req.params.id);
+
+  const result = posts
     .filter(p => p.user_id === userId)
     .sort((a, b) => b.id - a.id)
     .map(p => {
@@ -151,19 +184,20 @@ app.get("/api/posts/user/:id", (req, res) => {
         username: user?.username || ""
       };
     });
-  return res.json(userPosts);
+
+  res.json(result);
 });
 
+// Post erstellen
 app.post("/api/posts", (req, res) => {
   const { user_id, content } = req.body;
-  if (!user_id || !content) {
+
+  if (!user_id || !content)
     return res.status(400).json({ error: "user_id und content erforderlich" });
-  }
 
   const user = users.find(u => u.id === user_id);
-  if (!user) {
+  if (!user)
     return res.status(400).json({ error: "User existiert nicht" });
-  }
 
   const post = {
     id: nextPostId++,
@@ -171,52 +205,62 @@ app.post("/api/posts", (req, res) => {
     content,
     created_at: new Date().toISOString()
   };
+
   posts.push(post);
 
-  return res.status(201).json(post);
+  res.status(201).json(post);
 });
 
-// ===== FREUNDE =====
+// ===============================
+//  FREUNDE
+// ===============================
 
 app.get("/api/friends/:id", (req, res) => {
-  const userId = parseInt(req.params.id, 10);
-  const friendLinks = friends.filter(f => f.user_id === userId);
-  const result = friendLinks.map(f => {
-    const u = users.find(x => x.id === f.friend_id);
-    return {
-      user_id: f.friend_id,
-      full_name: u?.full_name || "",
-      username: u?.username || ""
-    };
-  });
-  return res.json(result);
+  const userId = parseInt(req.params.id);
+
+  const result = friends
+    .filter(f => f.user_id === userId)
+    .map(f => {
+      const u = users.find(x => x.id === f.friend_id);
+      return {
+        user_id: f.friend_id,
+        full_name: u?.full_name || "",
+        username: u?.username || ""
+      };
+    });
+
+  res.json(result);
 });
 
-// ===== NEWS =====
+// ===============================
+//  NEWS
+// ===============================
 
 app.get("/api/news", (req, res) => {
-  return res.json(news);
+  res.json(news);
 });
 
-// ===== HS-CODES =====
+// ===============================
+//  HS-CODE SUCHE
+// ===============================
 
 app.get("/api/hs-codes", (req, res) => {
-  const q = (req.query.q || "").toString().toLowerCase().trim();
-  if (!q) {
-    return res.json([]);
-  }
+  const q = (req.query.q || "").toLowerCase().trim();
 
-  const result = hsCodes.filter(item => {
-    return (
-      item.code.toLowerCase().includes(q) ||
-      item.description.toLowerCase().includes(q)
-    );
-  });
+  if (!q) return res.json([]);
 
-  return res.json(result);
+  const result = hsCodes.filter(item =>
+    item.code.toLowerCase().includes(q) ||
+    item.description.toLowerCase().includes(q)
+  );
+
+  res.json(result);
 });
 
-// ===== START =====
+// ===============================
+//  SERVER START
+// ===============================
+
 app.listen(PORT, () => {
-  console.log(`Server läuft auf http://localhost:${PORT}`);
+  console.log(`Server läuft auf Port ${PORT}`);
 });
