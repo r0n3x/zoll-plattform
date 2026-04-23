@@ -1,143 +1,136 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <title>Gaming Association – HS-Codes</title>
-    <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8" />
+  <title>LUDARA – HS-Codes</title>
+  <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
+<div class="app-shell">
 
-<div class="page-wrapper">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div>
+        <img src="img/ludara-logo.png" alt="LUDARA ai Logo" />
+      </div>
+      <div class="sidebar-logo-text">
+        <div class="sidebar-logo-title">LUDARA ai</div>
+        <div class="sidebar-logo-sub">Zoll · HS-Codes · Community</div>
+      </div>
+    </div>
 
-    <header class="ga-header">
-        <div class="ga-header-top">
-            <div class="ga-logo">GAMING ASSOCIATION</div>
-            <div class="ga-login-box">
-                <div class="ga-login-row">
-                    <input type="text" id="login-email" placeholder="Benutzername oder E-Mail">
-                    <input type="password" id="login-password" placeholder="Passwort">
-                    <button class="btn-primary" onclick="login()">Login</button>
-                </div>
-                <div class="ga-login-links">
-                    <a href="#" onclick="openRegister()">Jetzt registrieren</a>
-                    <a href="#">Passwort vergessen?</a>
-                </div>
-            </div>
+    <div>
+      <div class="nav-section-title">Navigation</div>
+      <nav class="nav-list">
+        <a href="index.html" class="nav-link">
+          <span class="icon">🏠</span><span>Home</span>
+        </a>
+        <a href="profile.html" class="nav-link">
+          <span class="icon">👤</span><span>Profil</span>
+        </a>
+        <a href="feed.html" class="nav-link">
+          <span class="icon">💬</span><span>Community</span>
+        </a>
+        <a href="news.html" class="nav-link">
+          <span class="icon">📰</span><span>News</span>
+        </a>
+        <a href="hs.html" class="nav-link active">
+          <span class="icon">🔍</span><span>HS-Codes</span>
+        </a>
+      </nav>
+    </div>
+
+    <div class="sidebar-footer">
+      © LUDARA ai · 2026
+    </div>
+  </aside>
+
+  <div class="main-area">
+    <header class="topbar">
+      <div class="topbar-left">HS-Codes</div>
+      <div class="topbar-right">
+        <div class="topbar-login">
+          <input type="text" id="login-email" placeholder="E-Mail oder Benutzername" />
+          <input type="password" id="login-password" placeholder="Passwort" />
+          <button class="btn-primary" onclick="login()">Login</button>
         </div>
-
-        <nav class="ga-nav">
-            <a href="index.html">HOME</a>
-            <a href="profile.html">TEAMSHEET / PROFIL</a>
-            <a href="feed.html">COMMUNITY</a>
-            <a href="news.html">PARTNER / NEWS</a>
-            <a href="hs.html" class="active">HS-CODES</a>
-        </nav>
-
-        <div class="ga-sponsor-bar">
-            <span>Sponsor:</span>
-            <div class="ga-sponsor-pill">QPAD</div>
-            <div class="ga-sponsor-pill">Couchmaster</div>
+        <div class="topbar-links">
+          <a href="#" onclick="openRegister()">Jetzt registrieren</a>
+          <a href="#">Passwort vergessen?</a>
         </div>
+      </div>
     </header>
 
-    <section class="ga-main-grid">
-
-        <div class="ga-main-left">
-            <div class="ga-box">
-                <div class="ga-box-header">HS-Code Suche</div>
-
-                <div class="ga-hs-search">
-                    <input id="hs-search-page" placeholder="HS Code oder Beschreibung eingeben...">
-                    <button class="btn-primary" onclick="searchHSPage()">Suchen</button>
-                </div>
-
-                <div id="hs-results-page" style="font-size:14px; line-height:1.5;"></div>
+    <main class="content-full">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">HS-Code Suche</div>
+            <div class="card-subtitle">
+              Durchsuche deine komplette HS-Datenbank (hs_2026.json) über das Backend.
             </div>
+          </div>
         </div>
 
-        <aside class="ga-main-right">
-            <div class="ga-box ga-calendar">
-                <div class="ga-box-header">Features / Event Calendar</div>
-                <div class="ga-calendar-header">
-                    <span>November</span>
-                    <span>Mo Di Mi Do Fr Sa So</span>
-                </div>
-                <div class="ga-calendar-grid">
-                    <div></div><div></div><div></div><div></div><div></div><div></div><div></div>
-                    <div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div><div>7</div>
-                    <div>8</div><div>9</div><div>10</div><div>11</div><div>12</div><div>13</div><div>14</div>
-                    <div>15</div><div>16</div><div>17</div><div>18</div><div>19</div><div>20</div><div>21</div>
-                    <div>22</div><div>23</div><div>24</div><div>25</div><div>26</div><div>27</div><div>28</div>
-                    <div>29</div><div>30</div>
-                </div>
+        <div class="hs-search-bar">
+          <input
+            id="hs-search-page"
+            class="hs-search-input"
+            placeholder="HS-Code (z.B. 8471) oder Beschreibung (z.B. Computer)..."
+          />
+          <button class="btn-primary" onclick="searchHSPage()">Suchen</button>
+        </div>
+
+        <div id="hs-results-page" class="hs-results">
+          <div class="hs-item">
+            <div class="hs-code">Hinweis</div>
+            <div class="hs-desc">
+              Die Suche erfolgt über <code>/api/hs-codes</code> und nutzt deine große JSON-Datei im Backend.
             </div>
-        </aside>
-
-    </section>
-
-    <footer class="ga-footer">
-        <div class="ga-footer-left">
-            <div class="ga-footer-title">Gaming Association</div>
-            <p>About Gaming Association – Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio.</p>
+          </div>
         </div>
-        <div class="ga-footer-middle">
-            <div class="ga-footer-sponsor">Sennheiser</div>
-            <div class="ga-footer-sponsor">Steelseries</div>
-        </div>
-        <div class="ga-footer-right">
-            <a href="index.html">Home</a>
-            <a href="profile.html">Teamsheet / Profil</a>
-            <a href="feed.html">Community</a>
-            <a href="news.html">Partner / News</a>
-            <a href="hs.html">HS-Codes</a>
-            <div class="ga-footer-copy">© Gaming Association 2012</div>
-        </div>
-    </footer>
-
+      </div>
+    </main>
+  </div>
 </div>
 
 <script src="js/app.js"></script>
-
 <script>
 async function searchHSPage() {
-    const input = document.getElementById("hs-search-page");
-    const container = document.getElementById("hs-results-page");
-
-    const q = input.value.trim();
-    if (!q) {
-        container.innerHTML = "<div>Bitte Suchbegriff eingeben.</div>";
-        return;
+  const input = document.getElementById("hs-search-page");
+  const container = document.getElementById("hs-results-page");
+  const q = input.value.trim();
+  if (!q) {
+    container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Bitte Suchbegriff eingeben.</div></div>";
+    return;
+  }
+  container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Suche läuft...</div></div>";
+  try {
+    const res = await fetch(`/api/hs-codes?q=${encodeURIComponent(q)}`);
+    if (!res.ok) {
+      container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Fehler bei der Suche.</div></div>";
+      return;
     }
-
-    container.innerHTML = "<div>Suche läuft...</div>";
-
-    try {
-        const res = await fetch(`/api/hs-codes?q=${encodeURIComponent(q)}`);
-        const data = await res.json();
-
-        if (!data.length) {
-            container.innerHTML = "<div>Keine Treffer gefunden.</div>";
-            return;
-        }
-
-        let html = "";
-        data.forEach(item => {
-            html += `
-                <div style="padding:6px 0; border-bottom:1px solid #ddd;">
-                    <strong>${item.code}</strong><br>
-                    ${item.description}
-                </div>
-            `;
-        });
-
-        container.innerHTML = html;
-
-    } catch (err) {
-        console.error(err);
-        container.innerHTML = "<div>Serverfehler.</div>";
+    const data = await res.json();
+    if (!data.length) {
+      container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Keine Treffer gefunden.</div></div>";
+      return;
     }
+    let html = "";
+    data.forEach(item => {
+      html += `
+        <div class="hs-item">
+          <div class="hs-code">${item.code}</div>
+          <div class="hs-desc">${item.description}</div>
+        </div>
+      `;
+    });
+    container.innerHTML = html;
+  } catch (err) {
+    console.error(err);
+    container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Serverfehler.</div></div>";
+  }
 }
 </script>
-
 </body>
 </html>
