@@ -2,43 +2,97 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>LUDARA – HS-Codes</title>
+    <title>Gaming Association – HS-Codes</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<header class="top-header">
-    <div class="logo">LUDARA AI</div>
-    <div class="login-box">
-        <input type="text" id="login-email" placeholder="E-Mail">
-        <input type="password" id="login-password" placeholder="Passwort">
-        <button class="btn-blue" onclick="login()">Login</button>
-        <a href="#" class="small-link" onclick="openRegister()">Jetzt registrieren</a>
-    </div>
-</header>
+<div class="page-wrapper">
 
-<nav class="main-nav">
-    <a href="index.html">HOME</a>
-    <a href="profile.html">PROFIL</a>
-    <a href="news.html">ZOLL-NEWS</a>
-    <a href="feed.html">COMMUNITY</a>
-    <a href="hs.html" class="active">HS-CODES</a>
-</nav>
-
-<section class="content-grid single-column">
-    <div class="left-column">
-        <h2>HS-Code Suche</h2>
-        <div class="hs-search-box">
-            <input id="hs-search-page" placeholder="HS Code oder Beschreibung">
-            <button class="btn-blue" onclick="searchHSPage()">Suchen</button>
+    <header class="ga-header">
+        <div class="ga-header-top">
+            <div class="ga-logo">GAMING ASSOCIATION</div>
+            <div class="ga-login-box">
+                <div class="ga-login-row">
+                    <input type="text" id="login-email" placeholder="Benutzername oder E-Mail">
+                    <input type="password" id="login-password" placeholder="Passwort">
+                    <button class="btn-primary" onclick="login()">Login</button>
+                </div>
+                <div class="ga-login-links">
+                    <a href="#" onclick="openRegister()">Jetzt registrieren</a>
+                    <a href="#">Passwort vergessen?</a>
+                </div>
+            </div>
         </div>
-        <div id="hs-results-page"></div>
-    </div>
-</section>
 
-<footer class="footer">
-    <p>© 2026 LUDARA AI – HS-Codes</p>
-</footer>
+        <nav class="ga-nav">
+            <a href="index.html">HOME</a>
+            <a href="profile.html">TEAMSHEET / PROFIL</a>
+            <a href="feed.html">COMMUNITY</a>
+            <a href="news.html">PARTNER / NEWS</a>
+            <a href="hs.html" class="active">HS-CODES</a>
+        </nav>
+
+        <div class="ga-sponsor-bar">
+            <span>Sponsor:</span>
+            <div class="ga-sponsor-pill">QPAD</div>
+            <div class="ga-sponsor-pill">Couchmaster</div>
+        </div>
+    </header>
+
+    <section class="ga-main-grid">
+
+        <div class="ga-main-left">
+            <div class="ga-box">
+                <div class="ga-box-header">HS-Code Suche</div>
+                <div class="ga-hs-search">
+                    <input id="hs-search-page" placeholder="HS Code oder Beschreibung">
+                    <button class="btn-primary" onclick="searchHSPage()">Suchen</button>
+                </div>
+                <div id="hs-results-page"></div>
+            </div>
+        </div>
+
+        <aside class="ga-main-right">
+            <div class="ga-box ga-calendar">
+                <div class="ga-box-header">Features / Event Calendar</div>
+                <div class="ga-calendar-header">
+                    <span>November</span>
+                    <span>Mo Di Mi Do Fr Sa So</span>
+                </div>
+                <div class="ga-calendar-grid">
+                    <div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+                    <div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div><div>7</div>
+                    <div>8</div><div>9</div><div>10</div><div>11</div><div>12</div><div>13</div><div>14</div>
+                    <div>15</div><div>16</div><div>17</div><div>18</div><div>19</div><div>20</div><div>21</div>
+                    <div>22</div><div>23</div><div>24</div><div>25</div><div>26</div><div>27</div><div>28</div>
+                    <div>29</div><div>30</div>
+                </div>
+            </div>
+        </aside>
+
+    </section>
+
+    <footer class="ga-footer">
+        <div class="ga-footer-left">
+            <div class="ga-footer-title">Gaming Association</div>
+            <p>About Gaming Association – Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio.</p>
+        </div>
+        <div class="ga-footer-middle">
+            <div class="ga-footer-sponsor">Sennheiser</div>
+            <div class="ga-footer-sponsor">Steelseries</div>
+        </div>
+        <div class="ga-footer-right">
+            <a href="index.html">Home</a>
+            <a href="profile.html">Teamsheet / Profil</a>
+            <a href="feed.html">Community</a>
+            <a href="news.html">Partner / News</a>
+            <a href="hs.html">HS-Codes</a>
+            <div class="ga-footer-copy">copyright by Gaming Association 2012</div>
+        </div>
+    </footer>
+
+</div>
 
 <script src="js/app.js"></script>
 </body>
