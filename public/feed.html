@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>LUDARA – Community</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="top-header">
+    <div class="logo">LUDARA AI</div>
+    <div class="login-box">
+        <input type="text" placeholder="Benutzername">
+        <input type="password" placeholder="Passwort">
+        <button class="btn-blue">Login</button>
+    </div>
+</header>
+
+<nav class="main-nav">
+    <a href="index.html">HOME</a>
+    <a href="profile.html">PROFIL</a>
+    <a href="news.html">ZOLL-NEWS</a>
+    <a href="feed.html" class="active">COMMUNITY</a>
+    <a href="hs.html">HS-CODES</a>
+</nav>
+
+<section class="content-grid single-column">
+    <div class="left-column">
+        <h2>Community-Feed</h2>
+
+        <div class="post-create">
+            <textarea id="feed-post-content" placeholder="Teile etwas mit der Community"></textarea>
+            <button class="btn-blue" onclick="createFeedPost()">Posten</button>
+        </div>
+
+        <div id="feed-page-container"></div>
+    </div>
+</section>
+
+<footer class="footer">
+    <p>© 2026 LUDARA AI – Community</p>
+</footer>
+
+<script src="js/app.js"></script>
+<script>
+    loadFeedPage();
+</script>
+</body>
+</html>
