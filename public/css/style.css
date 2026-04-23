@@ -98,6 +98,7 @@ body {
     margin-top: 40px;
 }
 
+/* PROFILE */
 .profile-grid {
     grid-template-columns: 3fr 1fr;
 }
@@ -136,6 +137,7 @@ body {
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
+/* POSTS / NEWS / HS */
 .post-create textarea {
     width: 100%;
     min-height: 70px;
@@ -165,4 +167,14 @@ body {
 .hs-search-box input {
     flex: 1;
     padding: 6px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+    .content-grid {
+        grid-template-columns: 1fr;
+    }
+    .profile-grid {
+        grid-template-columns: 1fr;
+    }
 }
