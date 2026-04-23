@@ -10,9 +10,10 @@
 <header class="top-header">
     <div class="logo">LUDARA AI</div>
     <div class="login-box">
-        <input type="text" placeholder="Benutzername">
-        <input type="password" placeholder="Passwort">
-        <button class="btn-blue">Login</button>
+        <input type="text" id="login-email" placeholder="E-Mail">
+        <input type="password" id="login-password" placeholder="Passwort">
+        <button class="btn-blue" onclick="login()">Login</button>
+        <a href="#" class="small-link" onclick="openRegister()">Jetzt registrieren</a>
     </div>
 </header>
 
@@ -43,7 +44,7 @@
 
 <script src="js/app.js"></script>
 <script>
-    loadFeedPage();
+    document.addEventListener("DOMContentLoaded", loadFeedPage);
 </script>
 </body>
 </html>
