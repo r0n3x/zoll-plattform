@@ -1,219 +1,217 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <title>Gaming Association – Home</title>
-    <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8" />
+  <title>LUDARA – Home</title>
+  <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
+<div class="app-shell">
 
-<div class="page-wrapper">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div>
+        <img src="img/ludara-logo.png" alt="LUDARA ai Logo" />
+      </div>
+      <div class="sidebar-logo-text">
+        <div class="sidebar-logo-title">LUDARA ai</div>
+        <div class="sidebar-logo-sub">Zoll · HS-Codes · Community</div>
+      </div>
+    </div>
 
-    <header class="ga-header">
-        <div class="ga-header-top">
-            <div class="ga-logo">GAMING ASSOCIATION</div>
-            <div class="ga-login-box">
-                <div class="ga-login-row">
-                    <input type="text" id="login-email" placeholder="Benutzername oder E-Mail">
-                    <input type="password" id="login-password" placeholder="Passwort">
-                    <button class="btn-primary" onclick="login()">Login</button>
-                </div>
-                <div class="ga-login-links">
-                    <a href="#" onclick="openRegister()">Jetzt registrieren</a>
-                    <a href="#">Passwort vergessen?</a>
-                </div>
-            </div>
+    <div>
+      <div class="nav-section-title">Navigation</div>
+      <nav class="nav-list">
+        <a href="index.html" class="nav-link active">
+          <span class="icon">🏠</span><span>Home</span>
+        </a>
+        <a href="profile.html" class="nav-link">
+          <span class="icon">👤</span><span>Profil</span>
+        </a>
+        <a href="feed.html" class="nav-link">
+          <span class="icon">💬</span><span>Community</span>
+        </a>
+        <a href="news.html" class="nav-link">
+          <span class="icon">📰</span><span>News</span>
+        </a>
+        <a href="hs.html" class="nav-link">
+          <span class="icon">🔍</span><span>HS-Codes</span>
+        </a>
+      </nav>
+    </div>
+
+    <div class="sidebar-footer">
+      © LUDARA ai · 2026
+    </div>
+  </aside>
+
+  <!-- MAIN AREA -->
+  <div class="main-area">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div class="topbar-left">Home</div>
+      <div class="topbar-right">
+        <div class="topbar-login">
+          <input type="text" id="login-email" placeholder="E-Mail oder Benutzername" />
+          <input type="password" id="login-password" placeholder="Passwort" />
+          <button class="btn-primary" onclick="login()">Login</button>
         </div>
-
-        <nav class="ga-nav">
-            <a href="index.html" class="active">HOME</a>
-            <a href="profile.html">TEAMSHEET / PROFIL</a>
-            <a href="feed.html">COMMUNITY</a>
-            <a href="news.html">PARTNER / NEWS</a>
-            <a href="hs.html">HS-CODES</a>
-        </nav>
-
-        <div class="ga-sponsor-bar">
-            <span>Sponsor:</span>
-            <div class="ga-sponsor-pill">QPAD</div>
-            <div class="ga-sponsor-pill">Couchmaster</div>
+        <div class="topbar-links">
+          <a href="#" onclick="openRegister()">Jetzt registrieren</a>
+          <a href="#">Passwort vergessen?</a>
         </div>
+      </div>
     </header>
 
-    <section class="ga-hero">
-        <div class="ga-hero-main">
-            <div class="ga-hero-match">
-                <div class="ga-hero-title">MOUSESPORTS <span>VS</span> MOUSESPORTS</div>
-                <div class="ga-hero-meta">
-                    <span>01. Januar 2001</span>
-                    <span>League: ASL</span>
-                    <a href="#" class="ga-hero-link">Livestream</a>
-                </div>
+    <!-- CONTENT -->
+    <main class="content">
+      <!-- LEFT COLUMN -->
+      <section>
+        <div class="card">
+          <div class="hero">
+            <div class="hero-logo">
+              <img src="img/ludara-logo.png" alt="LUDARA ai Logo" />
             </div>
-        </div>
-        <div class="ga-hero-side">
-            <div class="ga-hero-thread-title">Last Threads</div>
-            <div id="threads-container">
-                <div class="ga-thread-item">
-                    <div class="ga-thread-title">Lorem ipsum dolor sit amet</div>
-                    <div class="ga-thread-meta">01.01.2001</div>
-                </div>
-                <div class="ga-thread-item">
-                    <div class="ga-thread-title">Consectetur adipiscing elit</div>
-                    <div class="ga-thread-meta">01.01.2001</div>
-                </div>
-                <div class="ga-thread-item">
-                    <div class="ga-thread-title">Sed do eiusmod tempor</div>
-                    <div class="ga-thread-meta">01.01.2001</div>
-                </div>
+            <div>
+              <div class="hero-text-title">Willkommen bei LUDARA ai</div>
+              <div class="hero-text-sub">
+                Deine Plattform für Zoll, HS-Codes, Community und News – in einem modernen, klaren Interface.
+              </div>
             </div>
-        </div>
-    </section>
-
-    <section class="ga-main-grid">
-
-        <div class="ga-main-left">
-            <div class="ga-box ga-match-list">
-                <div class="ga-box-header">Matches</div>
-                <div id="matches-container">
-                    <div class="ga-match-row">
-                        <span class="ga-match-date">01. Januar 2001</span>
-                        <span class="ga-match-vs">vs. Mousesports</span>
-                        <span class="ga-match-info">INFOBOX</span>
-                    </div>
-                    <div class="ga-match-row">
-                        <span class="ga-match-date">01. Januar 2001</span>
-                        <span class="ga-match-vs">vs. Mousesports</span>
-                        <span class="ga-match-info">INFOBOX</span>
-                    </div>
-                    <div class="ga-match-row">
-                        <span class="ga-match-date">01. Januar 2001</span>
-                        <span class="ga-match-vs">vs. Mousesports</span>
-                        <span class="ga-match-info">INFOBOX</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="ga-box ga-articles">
-                <div class="ga-box-header">Artikel</div>
-                <div class="ga-article-row">
-                    <div class="ga-article-image neymar"></div>
-                    <div class="ga-article-content">
-                        <h3>Neymar Transfer</h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero.</p>
-                        <div class="ga-stars">★★★★★</div>
-                    </div>
-                </div>
-                <div class="ga-article-row">
-                    <div class="ga-article-image car"></div>
-                    <div class="ga-article-content">
-                        <h3>I Mean Business</h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero.</p>
-                        <div class="ga-stars">★★★★☆</div>
-                    </div>
-                </div>
-            </div>
+          </div>
         </div>
 
-        <aside class="ga-main-right">
-            <div class="ga-box ga-calendar">
-                <div class="ga-box-header">Features / Event Calendar</div>
-                <div class="ga-calendar-header">
-                    <span>November</span>
-                    <span>Mo Di Mi Do Fr Sa So</span>
-                </div>
-                <div class="ga-calendar-grid">
-                    <div></div><div></div><div></div><div></div><div></div><div></div><div></div>
-                    <div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div><div>7</div>
-                    <div>8</div><div>9</div><div>10</div><div>11</div><div>12</div><div>13</div><div>14</div>
-                    <div>15</div><div>16</div><div>17</div><div>18</div><div>19</div><div>20</div><div>21</div>
-                    <div>22</div><div>23</div><div>24</div><div>25</div><div>26</div><div>27</div><div>28</div>
-                    <div>29</div><div>30</div>
-                </div>
+        <div style="height: 16px;"></div>
+
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Aktuelle Community-Beiträge</div>
+              <div class="card-subtitle">Ein Blick in den LUDARA-Feed</div>
             </div>
-
-            <div class="ga-box ga-servers">
-                <div class="ga-box-header">Server / Public Gameserver</div>
-                <div class="ga-server-row">
-                    <span>DUST 2 ONLY GAMESERVER #1</span>
-                    <span>18/24 SLOT</span>
-                </div>
-                <div class="ga-server-row">
-                    <span>DUST ONLY GAMESERVER #2</span>
-                    <span>15/24 SLOT</span>
-                </div>
-                <div class="ga-server-row">
-                    <span>INFERNO ONLY GAMESERVER #3</span>
-                    <span>24/24 SLOT</span>
-                </div>
-                <div class="ga-server-row">
-                    <span>NUKE ONLY GAMESERVER #4</span>
-                    <span>11/24 SLOT</span>
-                </div>
-                <div class="ga-server-row">
-                    <span>SEASON ONLY GAMESERVER #5</span>
-                    <span>11/24 SLOT</span>
-                </div>
-                <div class="ga-server-row">
-                    <span>DUST 2 DEATHMATCH GAMESERVER #6</span>
-                    <span>23/24 SLOT</span>
-                </div>
+          </div>
+          <div id="home-feed" class="list">
+            <!-- Kann per JS mit Posts befüllt werden -->
+            <div class="list-item">
+              <div class="list-item-title">Noch keine Beiträge</div>
+              <div class="list-item-meta">Erstelle deinen ersten Post im Community-Bereich.</div>
             </div>
-        </aside>
+          </div>
+        </div>
+      </section>
 
-    </section>
-
-    <section class="ga-lower-grid">
-
-        <div class="ga-box ga-video">
-            <div class="ga-box-header">Livestream / Video</div>
-            <div class="ga-video-frame">
-                <div class="ga-video-label">GAMING ASSOCIATION</div>
-                <div class="ga-video-vs">VS</div>
-                <div class="ga-video-label">MOUSESPORTS</div>
+      <!-- RIGHT COLUMN -->
+      <aside>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Schnellzugriff HS-Codes</div>
+          </div>
+          <div class="hs-search-bar">
+            <input
+              id="hs-search-home"
+              class="hs-search-input"
+              placeholder="HS-Code oder Begriff eingeben..."
+            />
+            <button class="btn-primary" onclick="searchHSHome()">Suche</button>
+          </div>
+          <div id="hs-results-home" class="hs-results">
+            <div class="hs-item">
+              <div class="hs-code">Tipp</div>
+              <div class="hs-desc">Suche z.B. nach „Computer“, „Rindfleisch“ oder einem 4-stelligen Code.</div>
             </div>
+          </div>
         </div>
 
-        <div class="ga-box ga-social">
-            <div class="ga-box-header">Feed</div>
-            <div id="feed-container"></div>
-        </div>
+        <div style="height: 16px;"></div>
 
-        <div class="ga-box ga-twitter">
-            <div class="ga-box-header">Twitter Feed</div>
-            <div class="ga-twitter-item">
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-                <span>7th July, 2001</span>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Kalender</div>
+          </div>
+          <div class="calendar">
+            <div class="calendar-header">
+              <span>November</span>
+              <span>Mo Di Mi Do Fr Sa So</span>
             </div>
-            <div class="ga-twitter-item">
-                <p>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-                <span>7th July, 2001</span>
+            <div class="calendar-grid">
+              <div class="calendar-cell"></div>
+              <div class="calendar-cell"></div>
+              <div class="calendar-cell"></div>
+              <div class="calendar-cell"></div>
+              <div class="calendar-cell"></div>
+              <div class="calendar-cell">1</div>
+              <div class="calendar-cell">2</div>
+              <div class="calendar-cell">3</div>
+              <div class="calendar-cell">4</div>
+              <div class="calendar-cell">5</div>
+              <div class="calendar-cell">6</div>
+              <div class="calendar-cell">7</div>
+              <div class="calendar-cell">8</div>
+              <div class="calendar-cell">9</div>
+              <div class="calendar-cell">10</div>
+              <div class="calendar-cell today">11</div>
+              <div class="calendar-cell">12</div>
+              <div class="calendar-cell">13</div>
+              <div class="calendar-cell">14</div>
+              <div class="calendar-cell">15</div>
+              <div class="calendar-cell">16</div>
+              <div class="calendar-cell">17</div>
+              <div class="calendar-cell">18</div>
+              <div class="calendar-cell">19</div>
+              <div class="calendar-cell">20</div>
+              <div class="calendar-cell">21</div>
+              <div class="calendar-cell">22</div>
+              <div class="calendar-cell">23</div>
+              <div class="calendar-cell">24</div>
+              <div class="calendar-cell">25</div>
+              <div class="calendar-cell">26</div>
+              <div class="calendar-cell">27</div>
+              <div class="calendar-cell">28</div>
+              <div class="calendar-cell">29</div>
+              <div class="calendar-cell">30</div>
             </div>
+          </div>
         </div>
-
-    </section>
-
-    <footer class="ga-footer">
-        <div class="ga-footer-left">
-            <div class="ga-footer-title">Gaming Association</div>
-            <p>About Gaming Association – Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio.</p>
-        </div>
-        <div class="ga-footer-middle">
-            <div class="ga-footer-sponsor">Sennheiser</div>
-            <div class="ga-footer-sponsor">Steelseries</div>
-        </div>
-        <div class="ga-footer-right">
-            <a href="index.html">Home</a>
-            <a href="profile.html">Teamsheet / Profil</a>
-            <a href="feed.html">Community</a>
-            <a href="news.html">Partner / News</a>
-            <a href="hs.html">HS-Codes</a>
-            <div class="ga-footer-copy">copyright by Gaming Association 2012</div>
-        </div>
-    </footer>
-
+      </aside>
+    </main>
+  </div>
 </div>
 
 <script src="js/app.js"></script>
+<script>
+async function searchHSHome() {
+  const input = document.getElementById("hs-search-home");
+  const container = document.getElementById("hs-results-home");
+  const q = input.value.trim();
+  if (!q) {
+    container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Bitte Suchbegriff eingeben.</div></div>";
+    return;
+  }
+  container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Suche läuft...</div></div>";
+  try {
+    const res = await fetch(`/api/hs-codes?q=${encodeURIComponent(q)}`);
+    const data = await res.json();
+    if (!data.length) {
+      container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Keine Treffer gefunden.</div></div>";
+      return;
+    }
+    let html = "";
+    data.forEach(item => {
+      html += `
+        <div class="hs-item">
+          <div class="hs-code">${item.code}</div>
+          <div class="hs-desc">${item.description}</div>
+        </div>
+      `;
+    });
+    container.innerHTML = html;
+  } catch (err) {
+    console.error(err);
+    container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Serverfehler.</div></div>";
+  }
+}
+</script>
 </body>
 </html>
