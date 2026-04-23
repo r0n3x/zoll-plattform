@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const { Pool } = require('pg');
 const fs = require('fs');
 const path = require('path');
+const bcrypt = require('bcrypt');
 
 dotenv.config();
 
@@ -24,7 +25,6 @@ app.use(express.static('public'));
 // ---------- DB INIT ----------
 
 async function initDb() {
-  // Users
   await pool.query(`
     CREATE TABLE IF NOT EXISTS users (
       id SERIAL PRIMARY KEY,
@@ -34,7 +34,6 @@ async function initDb() {
     );
   `);
 
-  // Profiles (Facebook-ähnlich)
   await pool.query(`
     CREATE TABLE IF NOT EXISTS profiles (
       id SERIAL PRIMARY KEY,
@@ -50,18 +49,16 @@ async function initDb() {
     );
   `);
 
-  // Friends
   await pool.query(`
     CREATE TABLE IF NOT EXISTS friends (
       id SERIAL PRIMARY KEY,
       requester_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
       addressee_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-      status VARCHAR(20) NOT NULL, -- pending, accepted, blocked
+      status VARCHAR(20) NOT NULL,
       created_at TIMESTAMP DEFAULT NOW()
     );
   `);
 
-  // Posts
   await pool.query(`
     CREATE TABLE IF NOT EXISTS posts (
       id SERIAL PRIMARY KEY,
@@ -72,7 +69,6 @@ async function initDb() {
     );
   `);
 
-  // Comments
   await pool.query(`
     CREATE TABLE IF NOT EXISTS comments (
       id SERIAL PRIMARY KEY,
@@ -83,7 +79,6 @@ async function initDb() {
     );
   `);
 
-  // Likes
   await pool.query(`
     CREATE TABLE IF NOT EXISTS likes (
       id SERIAL PRIMARY KEY,
@@ -94,19 +89,17 @@ async function initDb() {
     );
   `);
 
-  // Notifications
   await pool.query(`
     CREATE TABLE IF NOT EXISTS notifications (
       id SERIAL PRIMARY KEY,
       user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-      type VARCHAR(50), -- friend_request, like, comment, etc.
+      type VARCHAR(50),
       payload JSONB,
       is_read BOOLEAN DEFAULT FALSE,
       created_at TIMESTAMP DEFAULT NOW()
     );
   `);
 
-  // HS-Codes (wie bisher)
   await pool.query(`
     CREATE TABLE IF NOT EXISTS hs_codes (
       id SERIAL PRIMARY KEY,
@@ -187,9 +180,80 @@ app.get('/api/hs-codes', async (req, res) => {
   }
 });
 
-// ---------- USER & PROFILE API (Facebook-ähnlich, minimal) ----------
+// ---------- AUTH API ----------
 
-// User anlegen (sehr simpel, ohne echte Auth-Logik)
+app.post('/api/auth/register', async (req, res) => {
+  try {
+    const { email, password, full_name, username } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({ error: 'email und password erforderlich' });
+    }
+
+    const password_hash = await bcrypt.hash(password, 10);
+
+    const userResult = await pool.query(
+      `INSERT INTO users (email, password_hash)
+       VALUES ($1, $2)
+       RETURNING id, email, created_at`,
+      [email, password_hash]
+    );
+    const user = userResult.rows[0];
+
+    const profileResult = await pool.query(
+      `INSERT INTO profiles (user_id, full_name, username)
+       VALUES ($1, $2, $3)
+       RETURNING id, user_id, full_name, username`,
+      [user.id, full_name || null, username || null]
+    );
+
+    res.json({ user, profile: profileResult.rows[0] });
+  } catch (e) {
+    console.error("Register Fehler:", e);
+    res.status(500).json({ error: "Fehler bei der Registrierung" });
+  }
+});
+
+app.post('/api/auth/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({ error: 'email und password erforderlich' });
+    }
+
+    const userResult = await pool.query(
+      `SELECT * FROM users WHERE email = $1`,
+      [email]
+    );
+    if (userResult.rows.length === 0) {
+      return res.status(401).json({ error: 'Ungültige Zugangsdaten' });
+    }
+
+    const user = userResult.rows[0];
+    const ok = await bcrypt.compare(password, user.password_hash || '');
+    if (!ok) {
+      return res.status(401).json({ error: 'Ungültige Zugangsdaten' });
+    }
+
+    const profileResult = await pool.query(
+      `SELECT * FROM profiles WHERE user_id = $1`,
+      [user.id]
+    );
+
+    res.json({
+      user: {
+        id: user.id,
+        email: user.email
+      },
+      profile: profileResult.rows[0] || null
+    });
+  } catch (e) {
+    console.error("Login Fehler:", e);
+    res.status(500).json({ error: "Fehler beim Login" });
+  }
+});
+
+// ---------- USER & PROFILE API ----------
+
 app.post('/api/users', async (req, res) => {
   try {
     const { email, full_name, username } = req.body;
@@ -216,7 +280,6 @@ app.post('/api/users', async (req, res) => {
   }
 });
 
-// Profil abrufen
 app.get('/api/profiles/:username', async (req, res) => {
   try {
     const { username } = req.params;
@@ -235,7 +298,6 @@ app.get('/api/profiles/:username', async (req, res) => {
   }
 });
 
-// Profil aktualisieren
 app.put('/api/profiles/:username', async (req, res) => {
   try {
     const { username } = req.params;
@@ -262,9 +324,8 @@ app.put('/api/profiles/:username', async (req, res) => {
   }
 });
 
-// ---------- FRIENDS API (einfaches Freundschaftssystem) ----------
+// ---------- FRIENDS API ----------
 
-// Freundschaftsanfrage senden
 app.post('/api/friends/request', async (req, res) => {
   try {
     const { requester_id, addressee_id } = req.body;
@@ -292,7 +353,6 @@ app.post('/api/friends/request', async (req, res) => {
   }
 });
 
-// Freundschaftsanfrage akzeptieren
 app.post('/api/friends/accept', async (req, res) => {
   try {
     const { request_id } = req.body;
@@ -314,7 +374,6 @@ app.post('/api/friends/accept', async (req, res) => {
   }
 });
 
-// Freunde eines Users
 app.get('/api/friends/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
@@ -337,7 +396,6 @@ app.get('/api/friends/:userId', async (req, res) => {
 
 // ---------- POSTS / COMMENTS / LIKES API ----------
 
-// Post erstellen
 app.post('/api/posts', async (req, res) => {
   try {
     const { user_id, content, image_url } = req.body;
@@ -357,7 +415,6 @@ app.post('/api/posts', async (req, res) => {
   }
 });
 
-// Posts eines Users (Timeline)
 app.get('/api/posts/user/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
@@ -377,7 +434,6 @@ app.get('/api/posts/user/:userId', async (req, res) => {
   }
 });
 
-// Globaler Feed (einfach)
 app.get('/api/posts/feed', async (req, res) => {
   try {
     const result = await pool.query(
@@ -394,7 +450,6 @@ app.get('/api/posts/feed', async (req, res) => {
   }
 });
 
-// Kommentar erstellen
 app.post('/api/comments', async (req, res) => {
   try {
     const { post_id, user_id, content } = req.body;
@@ -416,7 +471,6 @@ app.post('/api/comments', async (req, res) => {
   }
 });
 
-// Kommentare zu einem Post
 app.get('/api/comments/:postId', async (req, res) => {
   try {
     const { postId } = req.params;
@@ -435,7 +489,6 @@ app.get('/api/comments/:postId', async (req, res) => {
   }
 });
 
-// Like setzen
 app.post('/api/likes', async (req, res) => {
   try {
     const { post_id, user_id } = req.body;
@@ -456,7 +509,6 @@ app.post('/api/likes', async (req, res) => {
   }
 });
 
-// Likes eines Posts
 app.get('/api/likes/:postId', async (req, res) => {
   try {
     const { postId } = req.params;
@@ -493,11 +545,9 @@ app.get('/api/notifications/:userId', async (req, res) => {
   }
 });
 
-// ---------- ZOLL-NEWS API (repariert, statische News) ----------
+// ---------- ZOLL-NEWS API ----------
 
 app.get('/api/news', (req, res) => {
-  // Hier könntest du später echte Feeds parsen.
-  // Für jetzt: funktionierende, statische Zoll-News.
   const news = [
     {
       id: 1,
