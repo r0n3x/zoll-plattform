@@ -64,9 +64,9 @@ body {
 }
 
 .sidebar-logo img {
-  height: 48px;
-  width: 48px;
-  border-radius: 14px;
+  height: 100px;
+  width: 100px;
+  border-radius: 12px;
   object-fit: contain;
   background: radial-gradient(circle at 30% 20%, #ffffff, #dfe9ff);
   padding: 4px;
