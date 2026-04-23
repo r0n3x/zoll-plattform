@@ -1,284 +1,63 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <title>Zoll Plattform</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    .section { border: 1px solid #ccc; padding: 10px; margin-bottom: 15px; }
-    input, button, textarea { margin: 3px 0; }
-    #news { max-height: 200px; overflow-y: scroll; border: 1px solid #ddd; padding: 5px; }
-    #chatMessages { max-height: 200px; overflow-y: scroll; border: 1px solid #ddd; padding: 5px; }
-  </style>
+    <meta charset="UTF-8">
+    <title>LUDARA – Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
-  <h1>Zoll Plattform</h1>
 
-  <div class="section">
-    <h2>Registrierung</h2>
-    <input id="regEmail" type="email" placeholder="Email"><br>
-    <input id="regPassword" type="password" placeholder="Passwort"><br>
-    <button onclick="register()">Registrieren</button>
-    <div id="regResult"></div>
-  </div>
+<header class="top-header">
+    <div class="logo">LUDARA AI</div>
 
-  <div class="section">
-    <h2>Login</h2>
-    <input id="loginEmail" type="email" placeholder="Email"><br>
-    <input id="loginPassword" type="password" placeholder="Passwort"><br>
-    <button onclick="login()">Login</button>
-    <button onclick="logout()">Logout</button>
-    <div id="loginResult"></div>
-  </div>
-
-  <div class="section">
-    <h2>Mein Profil</h2>
-    <button onclick="loadProfile()">Profil laden</button><br>
-    <input id="profileName" placeholder="Name"><br>
-    <input id="profileAvatar" placeholder="Avatar URL"><br>
-    <input id="profileLocation" placeholder="Ort"><br>
-    <textarea id="profileBio" placeholder="Bio"></textarea><br>
-    <button onclick="saveProfile()">Profil speichern</button>
-    <pre id="profileData"></pre>
-  </div>
-
-  <div class="section">
-    <h2>User-Suche</h2>
-    <input id="userSearch" placeholder="Suche nach Name, Email oder ID">
-    <button onclick="searchUsers()">Suchen</button>
-    <pre id="userSearchResult"></pre>
-  </div>
-
-  <div class="section">
-    <h2>HS-Code Finder</h2>
-    <input id="hsQuery" placeholder="Suche nach Code oder Beschreibung">
-    <button onclick="searchHs()">Suchen</button><br>
-    <input id="hsCode" placeholder="Neuer Code">
-    <input id="hsDesc" placeholder="Beschreibung">
-    <button onclick="addHs()">HS-Code hinzufügen</button>
-    <pre id="hsResult"></pre>
-  </div>
-
-  <div class="section">
-    <h2>Währungsumrechner / Zollwertrechner</h2>
-    <div>
-      <h3>Wechselkurse</h3>
-      Basiswährung: <input id="rateBase" value="EUR">
-      <button onclick="loadRates()">Laden</button>
-      <pre id="rateResult"></pre>
+    <div class="login-box">
+        <input type="text" placeholder="Benutzername">
+        <input type="password" placeholder="Passwort">
+        <button class="btn-blue">Login</button>
+        <a href="#" class="small-link">Jetzt registrieren</a>
+        <a href="#" class="small-link">Passwort vergessen?</a>
     </div>
-    <div>
-      <h3>Zollwertrechner</h3>
-      Betrag: <input id="cvAmount" type="number" value="100"><br>
-      Von: <input id="cvFrom" value="EUR"><br>
-      Nach: <input id="cvTo" value="USD"><br>
-      Fracht: <input id="cvFreight" type="number" value="0"><br>
-      Versicherung: <input id="cvInsurance" type="number" value="0"><br>
-      <button onclick="calcCustoms()">Berechnen</button>
-      <pre id="cvResult"></pre>
+</header>
+
+<nav class="main-nav">
+    <a href="index.html" class="active">HOME</a>
+    <a href="profile.html">PROFIL</a>
+    <a href="news.html">ZOLL-NEWS</a>
+    <a href="feed.html">COMMUNITY</a>
+    <a href="hs.html">HS-CODES</a>
+</nav>
+
+<section class="hero">
+    <div class="hero-text">
+        <h1>Willkommen bei LUDARA</h1>
+        <p>Deine Plattform für Zoll, Community und Automatisierung.</p>
     </div>
-  </div>
+</section>
 
-  <div class="section">
-    <h2>Zoll-News (Deutschland)</h2>
-    <button onclick="loadNews()">News laden</button>
-    <div id="news"></div>
-  </div>
+<section class="content-grid">
 
-  <div class="section">
-    <h2>Online-Chat</h2>
-    <div id="chatMessages"></div>
-    <input id="chatMessage" placeholder="Nachricht">
-    <button onclick="sendChat()">Senden</button>
-  </div>
+    <div class="left-column">
+        <h2>Neueste Posts</h2>
+        <div id="feed-container"></div>
+    </div>
 
-  <div class="section">
-    <h2>Spielebereich</h2>
-    <ul>
-      <li><a href="/games/game1.html" target="_blank">Game 1: Klick-Spiel</a></li>
-      <li><a href="/games/game2.html" target="_blank">Game 2: Reaktionsspiel</a></li>
-      <li><a href="/games/game3.html" target="_blank">Game 3: Zahl raten</a></li>
-      <li><a href="/games/game4.html" target="_blank">Game 4: Timer</a></li>
-      <li><a href="/games/game5.html" target="_blank">Game 5: Mini-Snake</a></li>
-    </ul>
-  </div>
+    <div class="right-column">
+        <h2>Zoll-News</h2>
+        <div id="news-container"></div>
 
-  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-  <script>
-    const apiBase = '';
+        <h2>HS-Code Suche</h2>
+        <input id="hs-search" placeholder="HS Code oder Beschreibung">
+        <button onclick="searchHS()" class="btn-blue">Suchen</button>
+        <div id="hs-results"></div>
+    </div>
 
-    async function register() {
-      const email = document.getElementById('regEmail').value;
-      const password = document.getElementById('regPassword').value;
-      const res = await fetch(apiBase + '/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ email, password })
-      });
-      const data = await res.json();
-      document.getElementById('regResult').innerText = JSON.stringify(data, null, 2);
-    }
+</section>
 
-    async function login() {
-      const email = document.getElementById('loginEmail').value;
-      const password = document.getElementById('loginPassword').value;
-      const res = await fetch(apiBase + '/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ email, password })
-      });
-      const data = await res.json();
-      document.getElementById('loginResult').innerText = JSON.stringify(data, null, 2);
-      if (res.ok) {
-        connectChat();
-      }
-    }
+<footer class="footer">
+    <p>© 2026 LUDARA AI – All Rights Reserved</p>
+</footer>
 
-    async function logout() {
-      const res = await fetch(apiBase + '/api/auth/logout', {
-        method: 'POST',
-        credentials: 'include'
-      });
-      const data = await res.json();
-      document.getElementById('loginResult').innerText = JSON.stringify(data, null, 2);
-    }
-
-    async function loadProfile() {
-      const res = await fetch(apiBase + '/api/profile/me', {
-        credentials: 'include'
-      });
-      const data = await res.json();
-      document.getElementById('profileData').innerText = JSON.stringify(data, null, 2);
-      if (data) {
-        document.getElementById('profileName').value = data.full_name || '';
-        document.getElementById('profileAvatar').value = data.avatar_url || '';
-        document.getElementById('profileLocation').value = data.location || '';
-        document.getElementById('profileBio').value = data.bio || '';
-      }
-    }
-
-    async function saveProfile() {
-      const full_name = document.getElementById('profileName').value;
-      const avatar_url = document.getElementById('profileAvatar').value;
-      const location = document.getElementById('profileLocation').value;
-      const bio = document.getElementById('profileBio').value;
-      const res = await fetch(apiBase + '/api/profile/me', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ full_name, avatar_url, location, bio })
-      });
-      const data = await res.json();
-      document.getElementById('profileData').innerText = JSON.stringify(data, null, 2);
-    }
-
-    async function searchUsers() {
-      const q = document.getElementById('userSearch').value;
-      const res = await fetch(apiBase + '/api/users/search?q=' + encodeURIComponent(q), {
-        credentials: 'include'
-      });
-      const data = await res.json();
-      document.getElementById('userSearchResult').innerText = JSON.stringify(data, null, 2);
-    }
-
-    async function searchHs() {
-      const q = document.getElementById('hsQuery').value;
-      const res = await fetch(apiBase + '/api/hs-codes?q=' + encodeURIComponent(q));
-      const data = await res.json();
-      document.getElementById('hsResult').innerText = JSON.stringify(data, null, 2);
-    }
-
-    async function addHs() {
-      const code = document.getElementById('hsCode').value;
-      const description = document.getElementById('hsDesc').value;
-      const res = await fetch(apiBase + '/api/hs-codes', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ code, description })
-      });
-      const data = await res.json();
-      document.getElementById('hsResult').innerText = JSON.stringify(data, null, 2);
-    }
-
-    async function loadRates() {
-      const base = document.getElementById('rateBase').value;
-      const res = await fetch(apiBase + '/api/currency/rates?base=' + encodeURIComponent(base));
-      const data = await res.json();
-      document.getElementById('rateResult').innerText = JSON.stringify(data, null, 2);
-    }
-
-    async function calcCustoms() {
-      const amount = Number(document.getElementById('cvAmount').value);
-      const fromCurrency = document.getElementById('cvFrom').value;
-      const toCurrency = document.getElementById('cvTo').value;
-      const freight = Number(document.getElementById('cvFreight').value);
-      const insurance = Number(document.getElementById('cvInsurance').value);
-      const res = await fetch(apiBase + '/api/customs-value', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount, fromCurrency, toCurrency, freight, insurance })
-      });
-      const data = await res.json();
-      document.getElementById('cvResult').innerText = JSON.stringify(data, null, 2);
-    }
-
-    async function loadNews() {
-      const res = await fetch(apiBase + '/api/news/zoll');
-      const data = await res.json();
-      const container = document.getElementById('news');
-      container.innerHTML = '';
-      data.forEach(item => {
-        const div = document.createElement('div');
-        div.innerHTML = '<strong>' + item.title + '</strong><br>' +
-                        (item.pubDate || '') + '<br>' +
-                        '<a href="' + item.link + '" target="_blank">Link</a><br><br>';
-        container.appendChild(div);
-      });
-    }
-
-    let socket = null;
-
-    async function connectChat() {
-      try {
-        const meRes = await fetch(apiBase + '/api/auth/me', { credentials: 'include' });
-        if (!meRes.ok) return;
-        socket = io();
-
-        socket.on('connect', () => {
-          console.log('Chat verbunden');
-        });
-
-        socket.on('message', (msg) => {
-          const div = document.createElement('div');
-          div.textContent = '[' + msg.user.publicId + '] ' + msg.message;
-          const container = document.getElementById('chatMessages');
-          container.appendChild(div);
-          container.scrollTop = container.scrollHeight;
-        });
-      } catch (e) {
-        console.error('Chat-Verbindung fehlgeschlagen', e);
-      }
-    }
-
-    function sendChat() {
-      if (!socket) {
-        alert('Bitte zuerst einloggen, dann Chat verbinden.');
-        return;
-      }
-      const message = document.getElementById('chatMessage').value;
-      socket.emit('message', { room: 'global', message });
-      document.getElementById('chatMessage').value = '';
-    }
-
-    (async () => {
-      const res = await fetch(apiBase + '/api/auth/me', { credentials: 'include' });
-      if (res.ok) {
-        connectChat();
-      }
-    })();
-  </script>
+<script src="js/app.js"></script>
 </body>
 </html>
