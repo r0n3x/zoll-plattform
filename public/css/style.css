@@ -50,7 +50,12 @@ body {
     align-items: flex-end;
 }
 
-.ga-login-box input {
+.ga-login-row {
+    display: flex;
+    align-items: center;
+}
+
+.ga-login-row input {
     padding: 5px 8px;
     margin-left: 5px;
     margin-bottom: 3px;
@@ -343,8 +348,9 @@ body {
 
 /* SOCIAL FEED */
 
-.ga-social #feed-container {
-    max-height: 180px;
+.ga-social #feed-container,
+#feed-page-container {
+    max-height: 220px;
     overflow-y: auto;
     font-size: 12px;
 }
@@ -369,6 +375,79 @@ body {
 .ga-twitter-item span {
     color: #777;
     font-size: 11px;
+}
+
+/* PROFILE */
+
+.ga-profile-box {
+    margin-bottom: 10px;
+}
+
+.ga-profile-header {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.ga-profile-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--hellgrau);
+}
+
+.ga-profile-info {
+    font-size: 13px;
+}
+
+.ga-profile-name {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.ga-profile-username {
+    font-size: 12px;
+    color: #777;
+}
+
+.ga-profile-bio {
+    margin-top: 4px;
+    font-size: 12px;
+}
+
+.ga-profile-meta {
+    font-size: 12px;
+    color: #555;
+}
+
+/* POST CREATE */
+
+.ga-post-create textarea,
+#ga-hs-search-page,
+#hs-search-page {
+    width: 100%;
+}
+
+.ga-post-create textarea {
+    min-height: 70px;
+    margin-bottom: 6px;
+}
+
+.ga-post-create button {
+    float: right;
+}
+
+/* HS SEARCH */
+
+.ga-hs-search {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.ga-hs-search input {
+    flex: 1;
+    padding: 5px 8px;
 }
 
 /* FOOTER */
