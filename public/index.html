@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Gaming Association – Startseite</title>
+    <title>Gaming Association – Home</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -14,9 +14,11 @@
         <div class="ga-header-top">
             <div class="ga-logo">GAMING ASSOCIATION</div>
             <div class="ga-login-box">
-                <input type="text" id="login-email" placeholder="Benutzername oder E-Mail">
-                <input type="password" id="login-password" placeholder="Passwort">
-                <button class="btn-primary" onclick="login()">Login</button>
+                <div class="ga-login-row">
+                    <input type="text" id="login-email" placeholder="Benutzername oder E-Mail">
+                    <input type="password" id="login-password" placeholder="Passwort">
+                    <button class="btn-primary" onclick="login()">Login</button>
+                </div>
                 <div class="ga-login-links">
                     <a href="#" onclick="openRegister()">Jetzt registrieren</a>
                     <a href="#">Passwort vergessen?</a>
@@ -25,10 +27,11 @@
         </div>
 
         <nav class="ga-nav">
-            <a href="#" class="active">HOME</a>
-            <a href="#">TEAMSHEET</a>
-            <a href="#">COMMUNITY</a>
-            <a href="#">PARTNER</a>
+            <a href="index.html" class="active">HOME</a>
+            <a href="profile.html">TEAMSHEET / PROFIL</a>
+            <a href="feed.html">COMMUNITY</a>
+            <a href="news.html">PARTNER / NEWS</a>
+            <a href="hs.html">HS-CODES</a>
         </nav>
 
         <div class="ga-sponsor-bar">
@@ -38,7 +41,7 @@
         </div>
     </header>
 
-    <!-- HERO MATCH BANNER -->
+    <!-- HERO + THREADS -->
     <section class="ga-hero">
         <div class="ga-hero-main">
             <div class="ga-hero-match">
@@ -69,7 +72,7 @@
         </div>
     </section>
 
-    <!-- MATCH LIST + ARTICLES -->
+    <!-- MAIN GRID -->
     <section class="ga-main-grid">
 
         <div class="ga-main-left">
@@ -116,7 +119,6 @@
         </div>
 
         <aside class="ga-main-right">
-
             <div class="ga-box ga-calendar">
                 <div class="ga-box-header">Features / Event Calendar</div>
                 <div class="ga-calendar-header">
@@ -124,7 +126,6 @@
                     <span>Mo Di Mi Do Fr Sa So</span>
                 </div>
                 <div class="ga-calendar-grid">
-                    <!-- Nur Dummy-Grid -->
                     <div></div><div></div><div></div><div></div><div></div><div></div><div></div>
                     <div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div><div>7</div>
                     <div>8</div><div>9</div><div>10</div><div>11</div><div>12</div><div>13</div><div>14</div>
@@ -161,12 +162,11 @@
                     <span>23/24 SLOT</span>
                 </div>
             </div>
-
         </aside>
 
     </section>
 
-    <!-- VIDEO + FEEDS -->
+    <!-- LOWER GRID -->
     <section class="ga-lower-grid">
 
         <div class="ga-box ga-video">
@@ -208,10 +208,11 @@
             <div class="ga-footer-sponsor">Steelseries</div>
         </div>
         <div class="ga-footer-right">
-            <a href="#">Home</a>
-            <a href="#">Teamsheet</a>
-            <a href="#">Community</a>
-            <a href="#">Partner</a>
+            <a href="index.html">Home</a>
+            <a href="profile.html">Teamsheet / Profil</a>
+            <a href="feed.html">Community</a>
+            <a href="news.html">Partner / News</a>
+            <a href="hs.html">HS-Codes</a>
             <div class="ga-footer-copy">copyright by Gaming Association 2012</div>
         </div>
     </footer>
