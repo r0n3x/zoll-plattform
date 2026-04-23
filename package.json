@@ -1,9 +1,13 @@
 {
-  "name": "zoll-platform",
+  "name": "ludara-platform",
   "version": "1.0.0",
+  "description": "LUDARA AI Plattform – Backend + Frontend",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
+  },
+  "engines": {
+    "node": "18.x"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
