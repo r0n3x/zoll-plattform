@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Game 4 - Timer</title>
+</head>
+<body>
+  <h1>Timer-Spiel</h1>
+  <p>Versuche genau 5 Sekunden zu treffen!</p>
+  <button id="start">Start</button>
+  <button id="stop" disabled>Stop</button>
+  <p>Ergebnis: <span id="result">-</span> ms Abweichung</p>
+  <script>
+    let startTime = null;
+    const startBtn = document.getElementById('start');
+    const stopBtn = document.getElementById('stop');
+    const result = document.getElementById('result');
+
+    startBtn.onclick = () => {
+      startTime = performance.now();
+      startBtn.disabled = true;
+      stopBtn.disabled = false;
+      result.textContent = '-';
+    };
+
+    stopBtn.onclick = () => {
+      const diff = performance.now() - startTime;
+      const target = 5000;
+      const off = Math.abs(diff - target);
+      result.textContent = Math.round(off);
+      startBtn.disabled = false;
+      stopBtn.disabled = true;
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Game 5 - Mini Snake</title>
+</head>
+<body>
+  <h1>Mini Snake</h1>
+  <p>Bewege das Quadrat mit den Pfeiltasten, sammle die Punkte!</p>
+  <canvas id="c" width="300" height="300" style="border:1px solid #000;"></canvas>
+  <p>Punkte: <span id="score">0</span></p>
+  <script>
+    const canvas = document.getElementById('c');
+    const ctx = canvas.getContext('2d');
+    const scoreSpan = document.getElementById('score');
+    let x = 150, y = 150;
+    let foodX = 50, foodY = 50;
+    let score = 0;
+
+    function draw() {
+      ctx.clearRect(0, 0, 300, 300);
+      ctx.fillStyle = 'green';
+      ctx.fillRect(x, y, 10, 10);
+      ctx.fillStyle = 'red';
+      ctx.fillRect(foodX, foodY, 10, 10);
+    }
+
+    function newFood() {
+      foodX = Math.floor(Math.random() * 30) * 10;
+      foodY = Math.floor(Math.random() * 30) * 10;
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowUp') y -= 10;
+      if (e.key === 'ArrowDown') y += 10;
+      if (e.key === 'ArrowLeft') x -= 10;
+      if (e.key === 'ArrowRight') x += 10;
+      if (x < 0) x = 0;
+      if (y < 0) y = 0;
+      if (x > 290) x = 290;
+      if (y > 290) y = 290;
+      if (Math.abs(x - foodX) < 10 && Math.abs(y - foodY) < 10) {
+        score++;
+        scoreSpan.textContent = score;
+        newFood();
+      }
+      draw();
+    });
+
+    draw();
+  </script>
+</body>
+</html>

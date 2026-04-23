@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Game 1 - Klick-Spiel</title>
+</head>
+<body>
+  <h1>Klick-Spiel</h1>
+  <p>Klicke so oft wie möglich in 10 Sekunden!</p>
+  <button id="btn">Klick mich!</button>
+  <p>Klicks: <span id="count">0</span></p>
+  <p>Zeit: <span id="time">10</span>s</p>
+  <script>
+    let count = 0;
+    let time = 10;
+    let running = false;
+    const btn = document.getElementById('btn');
+    const countSpan = document.getElementById('count');
+    const timeSpan = document.getElementById('time');
+
+    btn.onclick = () => {
+      if (!running) {
+        running = true;
+        const interval = setInterval(() => {
+          time--;
+          timeSpan.textContent = time;
+          if (time <= 0) {
+            clearInterval(interval);
+            btn.disabled = true;
+            alert('Fertig! Klicks: ' + count);
+          }
+        }, 1000);
+      }
+      if (time > 0) {
+        count++;
+        countSpan.textContent = count;
+      }
+    };
+  </script>
+</body>
+</html>

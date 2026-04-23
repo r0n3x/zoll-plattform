@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Game 2 - Reaktionsspiel</title>
+</head>
+<body>
+  <h1>Reaktionsspiel</h1>
+  <p>Wenn der Bildschirm grün wird, klicke so schnell wie möglich!</p>
+  <button id="start">Start</button>
+  <div id="area" style="width:200px;height:200px;background:red;margin-top:20px;"></div>
+  <p>Reaktionszeit: <span id="result">-</span> ms</p>
+  <script>
+    const startBtn = document.getElementById('start');
+    const area = document.getElementById('area');
+    const result = document.getElementById('result');
+    let startTime = null;
+    let waiting = false;
+
+    startBtn.onclick = () => {
+      result.textContent = '-';
+      area.style.background = 'red';
+      waiting = true;
+      const delay = 1000 + Math.random() * 3000;
+      setTimeout(() => {
+        if (!waiting) return;
+        area.style.background = 'green';
+        startTime = performance.now();
+      }, delay);
+    };
+
+    area.onclick = () => {
+      if (!waiting || !startTime) return;
+      const diff = performance.now() - startTime;
+      result.textContent = Math.round(diff);
+      waiting = false;
+      startTime = null;
+      area.style.background = 'red';
+    };
+  </script>
+</body>
+</html>
