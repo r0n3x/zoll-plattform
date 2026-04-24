@@ -494,5 +494,48 @@ function exportAIToPDF() {
       </tr>
     `;
   });
+  
+    const explanation = lastAIResult.explanation || "";
 
-  const explanation = lastAIResult.ex
+  const html = `
+    <html>
+    <head>
+      <title>AI HS‑Codes Export</title>
+      <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        h1 { font-size: 20px; margin-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ccc; padding: 6px; font-size: 13px; }
+        th { background: #f3f4f6; }
+        .exp { margin-top: 12px; font-size: 13px; }
+      </style>
+    </head>
+    <body>
+      <h1>AI HS‑Code Analyse</h1>
+      <table>
+        <thead>
+          <tr>
+            <th>HS‑Code</th>
+            <th>Beschreibung</th>
+            <th>Wahrscheinlichkeit</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <div class="exp"><strong>Warum diese HS‑Codes?</strong><br>${explanation}</div>
+    </body>
+    </html>
+  `;
+
+  const win = window.open("", "_blank");
+  win.document.open();
+  win.document.write(html);
+  win.document.close();
+  win.focus();
+  win.print();
+}
+</script>
+
+</body>
+</html>
+
