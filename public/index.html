@@ -11,9 +11,7 @@
   <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sidebar-logo">
-      <div>
-        <img src="img/logo.png" alt="LUDARA ai Logo" class="logo-img">
-      </div>
+      <img src="img/logo.png" class="logo-img" />
       <div class="sidebar-logo-text">
         <div class="sidebar-logo-title">LUDARA ai</div>
         <div class="sidebar-logo-sub">Zoll · HS-Codes · Community</div>
@@ -23,35 +21,26 @@
     <div>
       <div class="nav-section-title">Navigation</div>
       <nav class="nav-list">
-        <a href="index.html" class="nav-link active">
-          <span class="icon">🏠</span><span>Home</span>
-        </a>
-        <a href="profile.html" class="nav-link">
-          <span class="icon">👤</span><span>Profil</span>
-        </a>
-        <a href="feed.html" class="nav-link">
-          <span class="icon">💬</span><span>Community</span>
-        </a>
-        <a href="news.html" class="nav-link">
-          <span class="icon">📰</span><span>News</span>
-        </a>
-        <a href="hs.html" class="nav-link">
-          <span class="icon">🔍</span><span>HS-Codes</span>
-        </a>
+        <a href="index.html" class="nav-link active"><span class="icon">🏠</span>Home</a>
+        <a href="profile.html" class="nav-link"><span class="icon">👤</span>Profil</a>
+        <a href="feed.html" class="nav-link"><span class="icon">💬</span>Community</a>
+        <a href="news.html" class="nav-link"><span class="icon">📰</span>News</a>
+        <a href="hs.html" class="nav-link"><span class="icon">🔍</span>HS‑Codes</a>
       </nav>
     </div>
 
-    <div class="sidebar-footer">
-      © LUDARA ai · 2026
-    </div>
+    <div class="sidebar-footer">© LUDARA ai · 2026</div>
   </aside>
 
   <!-- MAIN AREA -->
   <div class="main-area">
 
-    <!-- TOPBAR -->
+    <!-- TOPBAR MIT TICKER -->
     <header class="topbar">
-      <div class="topbar-left">Home</div>
+      <div class="news-ticker">
+        <div id="ticker-content">Lade News...</div>
+      </div>
+
       <div class="topbar-right">
         <div class="topbar-login">
           <input type="text" id="login-email" placeholder="E-Mail oder Benutzername" />
@@ -74,51 +63,24 @@
         <!-- HERO -->
         <div class="card">
           <div class="hero">
-            <div class="hero-logo">
-              <img src="img/logo.png" alt="LUDARA ai Logo" />
-            </div>
+            <img src="img/logo.png" class="hero-logo" />
             <div>
               <div class="hero-text-title">Willkommen bei LUDARA ai</div>
-              <div class="hero-text-sub">
-                Deine Plattform für Zoll, HS-Codes, Community und News – in einem modernen, klaren Interface.
-              </div>
+              <div class="hero-text-sub">Deine Plattform für Zoll, HS‑Codes, Community und News.</div>
             </div>
           </div>
         </div>
 
-        <div style="height: 16px;"></div>
+        <div style="height:16px;"></div>
 
         <!-- NEWS BOX -->
         <div class="card">
           <div class="card-header">
-            <div>
-              <div class="card-title">Aktuelle Zoll‑News</div>
-              <div class="card-subtitle">Direkt vom deutschen Zoll</div>
-            </div>
+            <div class="card-title">Aktuelle News</div>
+            <div class="card-subtitle">Automatisch aktualisiert</div>
           </div>
-
           <div id="home-news" class="list">
-            <div class="list-item">
-              <div class="list-item-title">News werden geladen...</div>
-            </div>
-          </div>
-        </div>
-
-        <div style="height: 16px;"></div>
-
-        <!-- COMMUNITY FEED -->
-        <div class="card">
-          <div class="card-header">
-            <div>
-              <div class="card-title">Aktuelle Community-Beiträge</div>
-              <div class="card-subtitle">Ein Blick in den LUDARA-Feed</div>
-            </div>
-          </div>
-          <div id="home-feed" class="list">
-            <div class="list-item">
-              <div class="list-item-title">Noch keine Beiträge</div>
-              <div class="list-item-meta">Erstelle deinen ersten Post im Community-Bereich.</div>
-            </div>
+            <div class="list-item"><div class="list-item-title">Lade News...</div></div>
           </div>
         </div>
 
@@ -129,128 +91,23 @@
 
         <!-- HS QUICK SEARCH -->
         <div class="card">
-          <div class="card-header">
-            <div class="card-title">Schnellzugriff HS-Codes</div>
-          </div>
+          <div class="card-header"><div class="card-title">HS‑Codes</div></div>
           <div class="hs-search-bar">
-            <input
-              id="hs-search-home"
-              class="hs-search-input"
-              placeholder="HS-Code oder Begriff eingeben..."
-            />
+            <input id="hs-search-home" class="hs-search-input" placeholder="HS‑Code oder Begriff..." />
             <button class="btn-primary" onclick="searchHSHome()">Suche</button>
           </div>
           <div id="hs-results-home" class="hs-results">
-            <div class="hs-item">
-              <div class="hs-code">Tipp</div>
-              <div class="hs-desc">Suche z.B. nach „Computer“, „Rindfleisch“ oder einem 4-stelligen Code.</div>
-            </div>
-          </div>
-        </div>
-
-        <div style="height: 16px;"></div>
-
-        <!-- KALENDER -->
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">Kalender</div>
-          </div>
-
-          <div class="calendar">
-            <div class="calendar-header">
-              <span id="cal-month"></span>
-              <span>Mo Di Mi Do Fr Sa So</span>
-            </div>
-            <div id="calendar-grid" class="calendar-grid"></div>
+            <div class="hs-item"><div class="hs-desc">Suche z.B. „Computer“</div></div>
           </div>
         </div>
 
       </aside>
+
     </main>
   </div>
 </div>
 
 <script src="js/app.js"></script>
-
-<!-- HS SEARCH -->
-<script>
-async function searchHSHome() {
-  const input = document.getElementById("hs-search-home");
-  const container = document.getElementById("hs-results-home");
-  const q = input.value.trim();
-  if (!q) {
-    container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Bitte Suchbegriff eingeben.</div></div>";
-    return;
-  }
-  container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Suche läuft...</div></div>";
-  try {
-    const res = await fetch(`/api/hs-codes?q=${encodeURIComponent(q)}`);
-    const data = await res.json();
-    if (!data.length) {
-      container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Keine Treffer gefunden.</div></div>";
-      return;
-    }
-    let html = "";
-    data.forEach(item => {
-      html += `
-        <div class="hs-item">
-          <div class="hs-code">${item.code}</div>
-          <div class="hs-desc">${item.description}</div>
-        </div>
-      `;
-    });
-    container.innerHTML = html;
-  } catch (err) {
-    console.error(err);
-    container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Serverfehler.</div></div>";
-  }
-}
-</script>
-
-<!-- KALENDER -->
-<script>
-function renderCalendar() {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth();
-  const today = now.getDate();
-
-  const monthNames = [
-    "Januar", "Februar", "März", "April", "Mai", "Juni",
-    "Juli", "August", "September", "Oktober", "November", "Dezember"
-  ];
-
-  document.getElementById("cal-month").textContent = monthNames[month] + " " + year;
-
-  const firstDay = new Date(year, month, 1).getDay();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-  const startOffset = firstDay === 0 ? 6 : firstDay - 1;
-
-  const grid = document.getElementById("calendar-grid");
-  grid.innerHTML = "";
-
-  for (let i = 0; i < startOffset; i++) {
-    const emptyCell = document.createElement("div");
-    emptyCell.classList.add("calendar-cell");
-    grid.appendChild(emptyCell);
-  }
-
-  for (let day = 1; day <= daysInMonth; day++) {
-    const cell = document.createElement("div");
-    cell.classList.add("calendar-cell");
-    cell.textContent = day;
-
-    if (day === today) {
-      cell.classList.add("today");
-    }
-
-    grid.appendChild(cell);
-  }
-}
-
-document.addEventListener("DOMContentLoaded", renderCalendar);
-</script>
 
 <!-- LOAD NEWS -->
 <script>
@@ -274,9 +131,7 @@ async function loadHomeNews() {
           <div class="list-item-title">${item.title}</div>
           <div class="list-item-meta">${new Date(item.date).toLocaleDateString("de-DE")}</div>
           <div class="list-item-desc">${item.description}</div>
-          <a href="news.html" class="btn-primary" style="margin-top:10px; display:inline-block;">
-            Alle News ansehen
-          </a>
+          <a href="news.html" class="btn-primary" style="margin-top:10px;">Alle News</a>
         </div>
       `;
     });
@@ -284,12 +139,34 @@ async function loadHomeNews() {
     container.innerHTML = html;
 
   } catch (err) {
-    console.error(err);
-    container.innerHTML = "<div class='list-item'><div class='list-item-title'>Fehler beim Laden der News.</div></div>";
+    container.innerHTML = "<div class='list-item'><div class='list-item-title'>Fehler beim Laden.</div></div>";
   }
 }
-
 document.addEventListener("DOMContentLoaded", loadHomeNews);
+</script>
+
+<!-- TICKER -->
+<script>
+async function loadTicker() {
+  const ticker = document.getElementById("ticker-content");
+  ticker.textContent = "Lade News...";
+
+  try {
+    const res = await fetch("/api/news");
+    const news = await res.json();
+
+    if (!news.length) {
+      ticker.textContent = "Keine News verfügbar.";
+      return;
+    }
+
+    ticker.textContent = news.map(n => n.title).join("   •   ");
+
+  } catch (err) {
+    ticker.textContent = "Fehler beim Laden.";
+  }
+}
+document.addEventListener("DOMContentLoaded", loadTicker);
 </script>
 
 </body>
