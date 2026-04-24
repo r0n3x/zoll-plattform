@@ -67,8 +67,11 @@
 
     <!-- CONTENT -->
     <main class="content">
+
       <!-- LEFT COLUMN -->
       <section>
+
+        <!-- HERO -->
         <div class="card">
           <div class="hero">
             <div class="hero-logo">
@@ -85,6 +88,25 @@
 
         <div style="height: 16px;"></div>
 
+        <!-- NEWS BOX -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Aktuelle Zoll‑News</div>
+              <div class="card-subtitle">Direkt vom deutschen Zoll</div>
+            </div>
+          </div>
+
+          <div id="home-news" class="list">
+            <div class="list-item">
+              <div class="list-item-title">News werden geladen...</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="height: 16px;"></div>
+
+        <!-- COMMUNITY FEED -->
         <div class="card">
           <div class="card-header">
             <div>
@@ -93,17 +115,19 @@
             </div>
           </div>
           <div id="home-feed" class="list">
-            <!-- Kann per JS mit Posts befüllt werden -->
             <div class="list-item">
               <div class="list-item-title">Noch keine Beiträge</div>
               <div class="list-item-meta">Erstelle deinen ersten Post im Community-Bereich.</div>
             </div>
           </div>
         </div>
+
       </section>
 
       <!-- RIGHT COLUMN -->
       <aside>
+
+        <!-- HS QUICK SEARCH -->
         <div class="card">
           <div class="card-header">
             <div class="card-title">Schnellzugriff HS-Codes</div>
@@ -126,27 +150,29 @@
 
         <div style="height: 16px;"></div>
 
+        <!-- KALENDER -->
         <div class="card">
-  <div class="card-header">
-    <div class="card-title">Kalender</div>
-  </div>
+          <div class="card-header">
+            <div class="card-title">Kalender</div>
+          </div>
 
-  <div class="calendar">
-    <div class="calendar-header">
-      <span id="cal-month"></span>
-      <span>Mo Di Mi Do Fr Sa So</span>
-    </div>
-    <div id="calendar-grid" class="calendar-grid"></div>
-  </div>
-</div>
+          <div class="calendar">
+            <div class="calendar-header">
+              <span id="cal-month"></span>
+              <span>Mo Di Mi Do Fr Sa So</span>
+            </div>
+            <div id="calendar-grid" class="calendar-grid"></div>
           </div>
         </div>
+
       </aside>
     </main>
   </div>
 </div>
 
 <script src="js/app.js"></script>
+
+<!-- HS SEARCH -->
 <script>
 async function searchHSHome() {
   const input = document.getElementById("hs-search-home");
@@ -181,11 +207,12 @@ async function searchHSHome() {
 }
 </script>
 
+<!-- KALENDER -->
 <script>
 function renderCalendar() {
   const now = new Date();
   const year = now.getFullYear();
-  const month = now.getMonth(); // 0 = Januar
+  const month = now.getMonth();
   const today = now.getDate();
 
   const monthNames = [
@@ -193,27 +220,22 @@ function renderCalendar() {
     "Juli", "August", "September", "Oktober", "November", "Dezember"
   ];
 
-  // Monatstitel setzen
   document.getElementById("cal-month").textContent = monthNames[month] + " " + year;
 
-  // Ersten Tag des Monats bestimmen
   const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-  // In JS ist Sonntag = 0 → wir wollen Montag = 1
   const startOffset = firstDay === 0 ? 6 : firstDay - 1;
 
   const grid = document.getElementById("calendar-grid");
   grid.innerHTML = "";
 
-  // Leere Felder vor dem 1. Tag
   for (let i = 0; i < startOffset; i++) {
     const emptyCell = document.createElement("div");
     emptyCell.classList.add("calendar-cell");
     grid.appendChild(emptyCell);
   }
 
-  // Tage einfügen
   for (let day = 1; day <= daysInMonth; day++) {
     const cell = document.createElement("div");
     cell.classList.add("calendar-cell");
@@ -227,10 +249,48 @@ function renderCalendar() {
   }
 }
 
-// Kalender beim Laden rendern
 document.addEventListener("DOMContentLoaded", renderCalendar);
 </script>
 
-  
+<!-- LOAD NEWS -->
+<script>
+async function loadHomeNews() {
+  const container = document.getElementById("home-news");
+  container.innerHTML = "<div class='list-item'><div class='list-item-title'>Lade News...</div></div>";
+
+  try {
+    const res = await fetch("/api/news");
+    const news = await res.json();
+
+    if (!news.length) {
+      container.innerHTML = "<div class='list-item'><div class='list-item-title'>Keine News verfügbar.</div></div>";
+      return;
+    }
+
+    let html = "";
+    news.slice(0, 5).forEach(item => {
+      html += `
+        <div class="list-item">
+          <div class="list-item-title">${item.title}</div>
+          <div class="list-item-meta">${new Date(item.date).toLocaleDateString("de-DE")}</div>
+          <div class="list-item-desc">${item.description}</div>
+          <a href="news.html" class="btn-primary" style="margin-top:10px; display:inline-block;">
+            Alle News ansehen
+          </a>
+        </div>
+      `;
+    });
+
+    container.innerHTML = html;
+
+  } catch (err) {
+    console.error(err);
+    container.innerHTML = "<div class='list-item'><div class='list-item-title'>Fehler beim Laden der News.</div></div>";
+  }
+}
+
+document.addEventListener("DOMContentLoaded", loadHomeNews);
+</script>
+
 </body>
 </html>
