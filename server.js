@@ -12,6 +12,16 @@ app.use(bodyParser.json());
 
 const upload = multer({ storage: multer.memoryStorage() });
 
+// ------------------------------------------------------
+// ROOT ROUTE (Option A) – Fix für "Cannot GET /"
+// ------------------------------------------------------
+app.get("/", (req, res) => {
+  res.send("LUDARA Backend läuft ✔");
+});
+
+// ------------------------------------------------------
+// OpenAI API Key (Render Environment Variable)
+// ------------------------------------------------------
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 // ------------------------------------------------------
