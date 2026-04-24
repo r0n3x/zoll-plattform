@@ -117,6 +117,23 @@
           <div id="calendar"></div>
         </div>
 
+        <!-- AI HS-CODE FINDER -->
+        <div class="card" style="margin-top:20px;">
+          <div class="card-header">
+            <div class="card-title">HS‑Code Finder (AI)</div>
+            <div class="card-subtitle">Welchen HS‑Code hat ein unbekanntes Elektrogerät?</div>
+          </div>
+
+          <div class="hs-search-bar">
+            <input id="ai-hs-input" class="hs-search-input" placeholder="z.B. tragbarer Bluetooth-Lautsprecher" />
+            <button class="btn-primary" onclick="findAIHSCode()">Finden</button>
+          </div>
+
+          <div id="ai-hs-result" class="hs-results" style="margin-top:12px;">
+            <div class="hs-item"><div class="hs-desc">Beschreibe ein Elektrogerät…</div></div>
+          </div>
+        </div>
+
       </aside>
 
     </main>
@@ -233,6 +250,41 @@ async function searchHSHome() {
 
   } catch (err) {
     container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Fehler beim Laden.</div></div>";
+  }
+}
+</script>
+
+<!-- AI HS-CODE FINDER -->
+<script>
+async function findAIHSCode() {
+  const query = document.getElementById("ai-hs-input").value.trim();
+  const container = document.getElementById("ai-hs-result");
+
+  if (!query) {
+    container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Bitte Beschreibung eingeben.</div></div>";
+    return;
+  }
+
+  container.innerHTML = "<div class='hs-item'><div class='hs-desc'>AI analysiert das Gerät…</div></div>";
+
+  try {
+    const res = await fetch(`/api/ai-hs?q=${encodeURIComponent(query)}`);
+    const data = await res.json();
+
+    if (!data || !data.code) {
+      container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Kein passender HS‑Code gefunden.</div></div>";
+      return;
+    }
+
+    container.innerHTML = `
+      <div class="hs-item">
+        <div class="hs-code"><strong>${data.code}</strong></div>
+        <div class="hs-desc">${data.description}</div>
+      </div>
+    `;
+
+  } catch (err) {
+    container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Fehler bei der AI‑Analyse.</div></div>";
   }
 }
 </script>
