@@ -34,7 +34,7 @@ app.get("/api/hs-codes", (req, res) => {
 });
 
 /* -----------------------------------------------------
-   NEWS – SÜDDEUTSCHE ZEITUNG (STABIL)
+   NEWS – TAGESSCHAU (STABIL, KEINE BLOCKADEN)
 ----------------------------------------------------- */
 
 let cachedNews = [];
@@ -49,13 +49,10 @@ function detectCategory(item) {
     return "news";
 }
 
-async function loadSZNews() {
+async function loadNews() {
     try {
-        const response = await axios.get("https://www.sueddeutsche.de/news/rss", {
-            responseType: "text",
-            headers: {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
-            }
+        const response = await axios.get("https://www.tagesschau.de/xml/rss2", {
+            responseType: "text"
         });
 
         const xml = response.data;
@@ -77,18 +74,18 @@ async function loadSZNews() {
             category: detectCategory(item)
         }));
 
-        console.log("SZ-News geladen:", cachedNews.length);
+        console.log("Tagesschau-News geladen:", cachedNews.length);
 
     } catch (err) {
-        console.error("Fehler beim Laden der SZ-News:", err);
+        console.error("Fehler beim Laden der Tagesschau-News:", err);
     }
 }
 
 // Beim Start laden
-loadSZNews();
+loadNews();
 
 // Alle 30 Minuten aktualisieren
-setInterval(loadSZNews, 30 * 60 * 1000);
+setInterval(loadNews, 30 * 60 * 1000);
 
 app.get("/api/news", (req, res) => {
     res.json(cachedNews);
