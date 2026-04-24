@@ -531,3 +531,39 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+/* --- NEWS DESIGN --- */
+
+.news-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.news-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.news-card h2 {
+    margin: 0 0 10px;
+}
+
+.news-card .date {
+    color: #777;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.news-card .btn {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 8px 14px;
+    background: #0094FF;
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+}
+
