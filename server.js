@@ -14,12 +14,11 @@ app.use(bodyParser.json());
 // STATIC FRONTEND (public folder)
 // ------------------------------------------------------
 app.use(express.static("public")); 
-// Jetzt lädt Render automatisch index.html unter "/"
 
 const upload = multer({ storage: multer.memoryStorage() });
 
 // ------------------------------------------------------
-// ROOT ROUTE (Option A)
+// ROOT ROUTE
 // ------------------------------------------------------
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/public/index.html");
@@ -52,7 +51,7 @@ function buildFallbackAIResponse(inputText) {
 }
 
 // ------------------------------------------------------
-// OpenAI-Aufruf
+// VERBESSERTE HS-CODE AI-FUNKTION
 // ------------------------------------------------------
 async function callOpenAIForHS(inputText) {
   if (!OPENAI_API_KEY) {
@@ -61,11 +60,17 @@ async function callOpenAIForHS(inputText) {
   }
 
   const prompt = `
-Du bist ein Experte für Zolltarifierung und HS-Codes.
-Analysiere die folgende Beschreibung oder Produktbezeichnung und gib mir eine strukturierte JSON-Antwort zurück.
+Du bist ein professioneller Zollexperte mit Spezialisierung auf HS-Codes (Harmonisiertes System, WCO) und TARIC (EU-Zolltarif).
 
-EINGABE:
-"${inputText}"
+Analysiere die folgende Produktbeschreibung oder Modellnummer und ermittle die wahrscheinlichsten HS-Codes.
+
+WICHTIG:
+- Nutze die offiziellen WCO-Regeln (GRI 1–6).
+- Berücksichtige Material, Funktion, Zweck, technische Eigenschaften.
+- Wenn die Eingabe nur eine Modellnummer ist, versuche das Produkt zu identifizieren.
+- Vergleiche ähnliche HS-Codes und erkläre, warum manche ausgeschlossen werden.
+- Gib nur echte HS-Codes zurück (6-stellig).
+- Confidence-Werte müssen realistisch sein (0.0–1.0).
 
 ANTWORTFORMAT (STRICT JSON):
 {
@@ -76,8 +81,11 @@ ANTWORTFORMAT (STRICT JSON):
       "confidence": 0.0 bis 1.0
     }
   ],
-  "explanation": "Warum diese HS-Codes gewählt wurden."
+  "explanation": "Warum diese HS-Codes gewählt wurden, inkl. Ausschlussgründe."
 }
+
+EINGABE:
+"${inputText}"
 `;
 
   const response = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -92,7 +100,7 @@ ANTWORTFORMAT (STRICT JSON):
         { role: "system", content: "Du antwortest ausschließlich mit gültigem JSON." },
         { role: "user", content: prompt }
       ],
-      temperature: 0.2
+      temperature: 0.1
     })
   });
 
@@ -114,16 +122,6 @@ ANTWORTFORMAT (STRICT JSON):
 
   if (!parsed.top5 || !Array.isArray(parsed.top5)) {
     return buildFallbackAIResponse(inputText);
-  }
-
-  parsed.top5 = parsed.top5.map(item => ({
-    code: String(item.code),
-    description: String(item.description),
-    confidence: typeof item.confidence === "number" ? item.confidence : 0.5
-  }));
-
-  if (!parsed.explanation) {
-    parsed.explanation = `Die HS-Codes wurden anhand der Eingabe "${inputText}" bestimmt.`;
   }
 
   return parsed;
