@@ -366,3 +366,46 @@ a {
 .hs-desc {
   font-size: 14px;
 }
+
+/* -----------------------------------------------------
+   KALENDER
+----------------------------------------------------- */
+.cal-header {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.cal-dayname {
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  color: #6b7280;
+}
+
+.cal-empty {
+  height: 32px;
+}
+
+.cal-day {
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f3f4f6;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.cal-today {
+  background: #0094ff;
+  color: white;
+  font-weight: 700;
+}
