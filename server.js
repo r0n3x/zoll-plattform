@@ -1,5 +1,5 @@
 // ======================================================
-// LUDARA Backend – FINAL CommonJS Version (Render Safe)
+// LUDARA Backend – Web Search + AI HS-Code Finder
 // ======================================================
 
 const express = require("express");
@@ -9,79 +9,95 @@ const fetch = require("node-fetch");
 
 const app = express();
 app.use(bodyParser.json());
-
-// ------------------------------------------------------
-// STATIC FRONTEND (public folder)
-// ------------------------------------------------------
-app.use(express.static("public")); 
+app.use(express.static("public"));
 
 const upload = multer({ storage: multer.memoryStorage() });
 
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+
 // ------------------------------------------------------
-// ROOT ROUTE
+// Root Route
 // ------------------------------------------------------
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/public/index.html");
 });
 
 // ------------------------------------------------------
-// OpenAI API Key
-// ------------------------------------------------------
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-
-// ------------------------------------------------------
-// Fallback-Antwort falls AI fehlschlägt
+// Fallback-Antwort
 // ------------------------------------------------------
 function buildFallbackAIResponse(inputText) {
   return {
     top5: [
       {
-        code: "8518.22",
-        description: `Fallback-HS-Code basierend auf: ${inputText}`,
-        confidence: 0.9
-      },
-      {
-        code: "8518.29",
-        description: "Alternative Einreihung (Fallback)",
-        confidence: 0.75
+        code: "0000.00",
+        description: `Keine Daten gefunden für: ${inputText}`,
+        confidence: 0.1
       }
     ],
-    explanation: `Dies ist eine Fallback-Antwort, weil die AI keine gültige Antwort liefern konnte. Eingabe war: "${inputText}".`
+    explanation: `Die Websuche lieferte keine verwertbaren Informationen.`
   };
 }
 
 // ------------------------------------------------------
-// VERBESSERTE HS-CODE AI-FUNKTION
+// WEB-SUCHE (DuckDuckGo HTML Scraper)
+// ------------------------------------------------------
+async function webSearch(query) {
+  const url = `https://duckduckgo.com/html/?q=${encodeURIComponent(query + " HS Code")}`;
+
+  const response = await fetch(url, {
+    headers: {
+      "User-Agent": "Mozilla/5.0"
+    }
+  });
+
+  const html = await response.text();
+
+  // Sehr einfacher Text-Extractor
+  const cleaned = html
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  return cleaned.slice(0, 5000); // AI braucht nicht mehr
+}
+
+// ------------------------------------------------------
+// AI HS-CODE ANALYSE MIT WEB-DATEN
 // ------------------------------------------------------
 async function callOpenAIForHS(inputText) {
   if (!OPENAI_API_KEY) {
-    console.warn("WARNUNG: OPENAI_API_KEY fehlt → Fallback wird genutzt.");
     return buildFallbackAIResponse(inputText);
   }
 
+  // 1) Websuche durchführen
+  const webData = await webSearch(inputText);
+
   const prompt = `
-Du bist ein professioneller Zollexperte mit Spezialisierung auf HS-Codes (Harmonisiertes System, WCO) und TARIC (EU-Zolltarif).
+Du bist ein professioneller Zollexperte mit Spezialisierung auf HS-Codes.
 
-Analysiere die folgende Produktbeschreibung oder Modellnummer und ermittle die wahrscheinlichsten HS-Codes.
+Hier sind echte Web-Suchergebnisse zum Produkt:
+---
+${webData}
+---
 
-WICHTIG:
-- Nutze die offiziellen WCO-Regeln (GRI 1–6).
-- Berücksichtige Material, Funktion, Zweck, technische Eigenschaften.
-- Wenn die Eingabe nur eine Modellnummer ist, versuche das Produkt zu identifizieren.
-- Vergleiche ähnliche HS-Codes und erkläre, warum manche ausgeschlossen werden.
-- Gib nur echte HS-Codes zurück (6-stellig).
-- Confidence-Werte müssen realistisch sein (0.0–1.0).
+Aufgabe:
+- Analysiere die Webdaten.
+- Ermittle die wahrscheinlichsten HS-Codes.
+- Nutze WCO-Regeln (GRI 1–6).
+- Gib nur echte 6-stellige HS-Codes zurück.
+- Erkläre, warum diese Codes passen.
+- Wenn Webdaten unklar sind: schätze basierend auf Funktion & Material.
 
 ANTWORTFORMAT (STRICT JSON):
 {
   "top5": [
     {
-      "code": "HS-Code als String",
+      "code": "HS-Code",
       "description": "Kurzbeschreibung",
       "confidence": 0.0 bis 1.0
     }
   ],
-  "explanation": "Warum diese HS-Codes gewählt wurden, inkl. Ausschlussgründe."
+  "explanation": "Warum diese HS-Codes gewählt wurden."
 }
 
 EINGABE:
@@ -105,26 +121,18 @@ EINGABE:
   });
 
   if (!response.ok) {
-    console.error("OpenAI HTTP-Fehler:", response.status, await response.text());
     return buildFallbackAIResponse(inputText);
   }
 
   const data = await response.json();
   const content = data.choices?.[0]?.message?.content || "";
 
-  let parsed;
   try {
-    parsed = JSON.parse(content);
-  } catch (err) {
-    console.error("Fehler beim JSON-Parse:", err, content);
+    const parsed = JSON.parse(content);
+    return parsed;
+  } catch {
     return buildFallbackAIResponse(inputText);
   }
-
-  if (!parsed.top5 || !Array.isArray(parsed.top5)) {
-    return buildFallbackAIResponse(inputText);
-  }
-
-  return parsed;
 }
 
 // ======================================================
@@ -139,7 +147,6 @@ app.post("/api/ai-hs", async (req, res) => {
     return res.json(result);
 
   } catch (err) {
-    console.error("Fehler in /api/ai-hs:", err);
     return res.status(500).json(buildFallbackAIResponse("INTERNAL_ERROR"));
   }
 });
@@ -155,7 +162,6 @@ app.post("/api/ai-hs-image", upload.single("file"), async (req, res) => {
     return res.json(result);
 
   } catch (err) {
-    console.error("Fehler in /api/ai-hs-image:", err);
     return res.status(500).json(buildFallbackAIResponse("IMAGE_ERROR"));
   }
 });
@@ -172,53 +178,8 @@ app.post("/api/ai-hs-url", async (req, res) => {
     return res.json(result);
 
   } catch (err) {
-    console.error("Fehler in /api/ai-hs-url:", err);
     return res.status(500).json(buildFallbackAIResponse("URL_ERROR"));
   }
-});
-
-// ======================================================
-// HS-Suche (Dummy)
-// ======================================================
-app.get("/api/hs-codes", (req, res) => {
-  const q = (req.query.q || "").trim().toLowerCase();
-
-  const db = [
-    { code: "8518.22", description: "Lautsprecher" },
-    { code: "8518.50", description: "Kopfhörer" },
-    { code: "8525.80", description: "Kamera" },
-    { code: "8504.40", description: "Netzteil" },
-    { code: "8517.12", description: "Smartphone" },
-    { code: "CP030A", description: "Beispielgerät CP030A" }
-  ];
-
-  const results = db.filter(
-    item =>
-      item.code.toLowerCase().includes(q) ||
-      item.description.toLowerCase().includes(q)
-  );
-
-  return res.json(results);
-});
-
-// ======================================================
-// NEWS (Dummy)
-// ======================================================
-app.get("/api/news", (req, res) => {
-  return res.json([
-    {
-      title: "Zollsysteme werden modernisiert",
-      description: "Neue digitale Prozesse angekündigt.",
-      date: new Date(),
-      category: "Zoll"
-    },
-    {
-      title: "HS-Code Reform 2026",
-      description: "Wichtige Änderungen treten in Kraft.",
-      date: new Date(),
-      category: "HS-Codes"
-    }
-  ]);
 });
 
 // ======================================================
