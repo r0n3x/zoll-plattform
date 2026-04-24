@@ -238,7 +238,40 @@ app.get("/api/friends/:id", (req, res) => {
 
 app.get("/api/news", (req, res) => {
   res.json(news);
+// --- AUTO ZOLL NEWS IMPORT --- //
+const Parser = require("rss-parser");
+const parser = new Parser();
+
+let cachedNews = []; // wird automatisch gefüllt
+
+async function loadZollNews() {
+    try {
+        const feed = await parser.parseURL("https://www.zoll.de/SiteGlobals/Functions/RSSFeed/DE/RSSNewsfeed.xml");
+        
+        cachedNews = feed.items.slice(0, 20).map(item => ({
+            title: item.title || "",
+            link: item.link || "",
+            date: item.pubDate || "",
+            description: item.contentSnippet || ""
+        }));
+
+        console.log("Zoll-News erfolgreich aktualisiert:", cachedNews.length);
+    } catch (err) {
+        console.error("Fehler beim Laden der Zoll-News:", err);
+    }
+}
+
+// Beim Serverstart sofort laden
+loadZollNews();
+
+// Alle 30 Minuten automatisch aktualisieren
+setInterval(loadZollNews, 30 * 60 * 1000);
+
+// API-Route für das Frontend
+app.get("/api/news", (req, res) => {
+    res.json(cachedNews);
 });
+
 
 // ===============================
 //  HS-CODE SUCHE
