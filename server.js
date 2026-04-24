@@ -34,54 +34,65 @@ app.get("/api/hs-codes", (req, res) => {
 });
 
 /* -----------------------------------------------------
-   NEWS – SÜDDEUTSCHE ZEITUNG (MIT USER-AGENT)
+   NEWS – SÜDDEUTSCHE ZEITUNG (STABIL)
 ----------------------------------------------------- */
 
 let cachedNews = [];
 
-async function loadSZNews() {
-  try {
-    const response = await axios.get("https://www.sueddeutsche.de/news/rss", {
-      responseType: "text",
-      headers: {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
-      }
-    });
+function detectCategory(item) {
+    const t = (item.title || "").toLowerCase();
+    const d = (item.description || "").toLowerCase();
 
-    const xml = response.data;
-
-    const parser = new xml2js.Parser({
-      explicitArray: false,
-      mergeAttrs: true,
-      strict: false
-    });
-
-    const result = await parser.parseStringPromise(xml);
-    const items = result?.rss?.channel?.item || [];
-
-    cachedNews = items.slice(0, 20).map(item => ({
-      title: item.title || "",
-      link: item.link || "",
-      date: item.pubDate || "",
-      description: item.description || "",
-      category: "news"
-    }));
-
-    console.log("SZ-News geladen:", cachedNews.length);
-
-  } catch (err) {
-    console.error("Fehler beim Laden der SZ-News:", err);
-  }
+    if (t.includes("eu") || d.includes("eu")) return "eu";
+    if (t.includes("wirtschaft") || d.includes("wirtschaft")) return "wirtschaft";
+    if (t.includes("politik") || d.includes("politik")) return "politik";
+    return "news";
 }
 
+async function loadSZNews() {
+    try {
+        const response = await axios.get("https://www.sueddeutsche.de/news/rss", {
+            responseType: "text",
+            headers: {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+            }
+        });
+
+        const xml = response.data;
+
+        const parser = new xml2js.Parser({
+            explicitArray: false,
+            mergeAttrs: true,
+            strict: false
+        });
+
+        const result = await parser.parseStringPromise(xml);
+        const items = result?.rss?.channel?.item || [];
+
+        cachedNews = items.slice(0, 25).map(item => ({
+            title: item.title || "",
+            link: item.link || "",
+            date: item.pubDate || "",
+            description: item.description || "",
+            category: detectCategory(item)
+        }));
+
+        console.log("SZ-News geladen:", cachedNews.length);
+
+    } catch (err) {
+        console.error("Fehler beim Laden der SZ-News:", err);
+    }
+}
+
+// Beim Start laden
 loadSZNews();
+
+// Alle 30 Minuten aktualisieren
 setInterval(loadSZNews, 30 * 60 * 1000);
 
 app.get("/api/news", (req, res) => {
-  res.json(cachedNews);
+    res.json(cachedNews);
 });
-
-
 
 /* -----------------------------------------------------
    SERVER STARTEN
