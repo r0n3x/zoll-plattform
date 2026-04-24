@@ -1,5 +1,5 @@
 // ======================================================
-// LUDARA Backend – CommonJS Version (Node 24 kompatibel)
+// LUDARA Backend – FINAL CommonJS Version (Node 24 safe)
 // ======================================================
 
 require("dotenv").config();
