@@ -156,6 +156,37 @@
 
 <script src="js/app.js"></script>
 
+<script>
+/* -----------------------------------------------------
+   GLOBAL AI RESULT STORAGE
+----------------------------------------------------- */
+let lastAIResult = null;
+
+/* -----------------------------------------------------
+   DEBOUNCE
+----------------------------------------------------- */
+function debounce(fn, delay) {
+  let timer;
+  return function(...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn.apply(this, args), delay);
+  };
+}
+</script>
+
+<!-- AUTO-SUCHE BEIM TIPPEN -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const inputHome = document.getElementById("hs-search-home");
+  if (inputHome) {
+    inputHome.addEventListener("input", debounce(() => {
+      const v = inputHome.value.trim();
+      if (v.length >= 2) searchHSHome();
+    }, 400));
+  }
+});
+</script>
+
 <!-- LOAD NEWS -->
 <script>
 async function loadHomeNews() {
@@ -201,11 +232,6 @@ async function loadTicker() {
   try {
     const res = await fetch("/api/news");
     const news = await res.json();
-
-    if (!news.length) {
-      container.innerHTML = "<div class='ticker-item'>Keine News verfügbar</div>";
-      return;
-    }
 
     let html = "";
     news.forEach(n => {
@@ -289,7 +315,8 @@ async function findAIHSCode() {
     });
 
     const data = await res.json();
-    renderTop5Table(data.top5);
+    lastAIResult = data;
+    renderTop5Table(data);
 
   } catch (err) {
     container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Fehler bei der AI‑Analyse.</div></div>";
@@ -320,7 +347,8 @@ async function findAIHSCodeImage() {
     });
 
     const data = await res.json();
-    renderTop5Table(data.top5);
+    lastAIResult = data;
+    renderTop5Table(data);
 
   } catch (err) {
     container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Fehler bei der Bildanalyse.</div></div>";
@@ -349,7 +377,8 @@ async function findAIHSCodeURL() {
     });
 
     const data = await res.json();
-    renderTop5Table(data.top5);
+    lastAIResult = data;
+    renderTop5Table(data);
 
   } catch (err) {
     container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Fehler bei der URL‑Analyse.</div></div>";
@@ -357,10 +386,11 @@ async function findAIHSCodeURL() {
 }
 </script>
 
-<!-- TOP-5 TABELLE (HEATMAP) -->
+<!-- TOP-5 TABELLE + ERKLÄRUNG + EXPORT -->
 <script>
-function renderTop5Table(list) {
+function renderTop5Table(data) {
   const container = document.getElementById("ai-hs-result");
+  const list = data && data.top5 ? data.top5 : [];
 
   if (!list || !list.length) {
     container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Keine Ergebnisse.</div></div>";
@@ -372,9 +402,9 @@ function renderTop5Table(list) {
   list.forEach(item => {
     const percent = Math.round(item.confidence * 100);
 
-    let color = "#ff4d4d"; // rot
-    if (percent >= 80) color = "#22c55e"; // grün
-    else if (percent >= 50) color = "#eab308"; // gelb
+    let color = "#ff4d4d"; 
+    if (percent >= 80) color = "#22c55e";
+    else if (percent >= 50) color = "#eab308";
 
     rows += `
       <tr>
@@ -390,6 +420,10 @@ function renderTop5Table(list) {
     `;
   });
 
+  const explanationHtml = data.explanation
+    ? `<div class="ai-explanation"><strong>Warum diese HS‑Codes?</strong><br>${data.explanation}</div>`
+    : "";
+
   container.innerHTML = `
     <table class="hs-table">
       <thead>
@@ -401,55 +435,64 @@ function renderTop5Table(list) {
       </thead>
       <tbody>${rows}</tbody>
     </table>
+    ${explanationHtml}
+    <div class="ai-export-actions">
+      <button class="btn-primary" onclick="exportAIToCSV()">CSV exportieren</button>
+      <button class="btn-primary" onclick="exportAIToPDF()">PDF drucken</button>
+    </div>
   `;
 }
 </script>
 
-<!-- KALENDER SCRIPT -->
+<!-- EXPORT CSV -->
 <script>
-function buildCalendar() {
-  const calendar = document.getElementById("calendar");
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = today.getMonth();
+function exportAIToCSV() {
+  if (!lastAIResult || !lastAIResult.top5 || !lastAIResult.top5.length) {
+    alert("Keine AI‑Ergebnisse zum Exportieren.");
+    return;
+  }
 
-  const monthNames = [
-    "Januar","Februar","März","April","Mai","Juni",
-    "Juli","August","September","Oktober","November","Dezember"
+  const rows = [
+    ["HS-Code", "Beschreibung", "Wahrscheinlichkeit (%)"]
   ];
 
-  const firstDay = new Date(year, month, 1).getDay();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  lastAIResult.top5.forEach(item => {
+    const percent = Math.round(item.confidence * 100);
+    rows.push([item.code, item.description, String(percent)]);
+  });
 
-  let html = `
-    <div class="cal-header">${monthNames[month]} ${year}</div>
-    <div class="cal-grid">
-      <div class="cal-dayname">Mo</div>
-      <div class="cal-dayname">Di</div>
-      <div class="cal-dayname">Mi</div>
-      <div class="cal-dayname">Do</div>
-      <div class="cal-dayname">Fr</div>
-      <div class="cal-dayname">Sa</div>
-      <div class="cal-dayname">So</div>
-  `;
+  const csvContent = rows.map(r => r.map(v => `"${(v || "").replace(/"/g, '""')}"`).join(";")).join("\n");
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
 
-  let start = firstDay === 0 ? 6 : firstDay - 1;
-
-  for (let i = 0; i < start; i++) {
-    html += `<div class="cal-empty"></div>`;
-  }
-
-  for (let d = 1; d <= daysInMonth; d++) {
-    const isToday = d === today.getDate();
-    html += `<div class="cal-day ${isToday ? "cal-today" : ""}">${d}</div>`;
-  }
-
-  html += `</div>`;
-  calendar.innerHTML = html;
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "ai-hs-codes.csv";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
-
-document.addEventListener("DOMContentLoaded", buildCalendar);
 </script>
 
-</body>
-</html>
+<!-- EXPORT PDF -->
+<script>
+function exportAIToPDF() {
+  if (!lastAIResult || !lastAIResult.top5 || !lastAIResult.top5.length) {
+    alert("Keine AI‑Ergebnisse zum Exportieren.");
+    return;
+  }
+
+  let rows = "";
+  lastAIResult.top5.forEach(item => {
+    const percent = Math.round(item.confidence * 100);
+    rows += `
+      <tr>
+        <td>${item.code}</td>
+        <td>${item.description}</td>
+        <td>${percent}%</td>
+      </tr>
+    `;
+  });
+
+  const explanation = lastAIResult.ex
