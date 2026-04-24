@@ -1,17 +1,15 @@
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
-const Parser = require("rss-parser");
+const Parser = require("rss-parser");   // <— EINMAL, korrekt
 
 const app = express();
-const parser = new Parser();
-
 app.use(express.json());
 app.use(express.static("public"));
 
-// ------------------------------
+// -----------------------------------------------------
 // HS-CODE DATEN LADEN
-// ------------------------------
+// -----------------------------------------------------
 let hsCodes = [];
 
 try {
@@ -35,10 +33,9 @@ app.get("/api/hs-codes", (req, res) => {
     res.json(results);
 });
 
-// --- AUTO ZOLL NEWS IMPORT (ROBUST VERSION) --- //
-const Parser = require("rss-parser");
-
-// Parser im toleranten Modus (wichtig!)
+// -----------------------------------------------------
+// AUTOMATISCHE ZOLL NEWS (ROBUST VERSION)
+// -----------------------------------------------------
 const parser = new Parser({
     xml2js: {
         strict: false,          // toleriert fehlerhafte XML-Attribute
@@ -62,10 +59,10 @@ async function loadZollNews() {
             description: item.description || item.contentSnippet || ""
         }));
 
-        console.log("Zoll-News erfolgreich aktualisiert:", cachedNews.length);
+        console.log("Zoll-News aktualisiert:", cachedNews.length);
 
     } catch (err) {
-        console.error("Fehler beim Laden der Zoll-News (trotz tolerantem Parser):", err);
+        console.error("Fehler beim Laden der Zoll-News:", err);
     }
 }
 
@@ -75,15 +72,14 @@ loadZollNews();
 // Alle 30 Minuten aktualisieren
 setInterval(loadZollNews, 30 * 60 * 1000);
 
-// API
+// API: Zoll-News
 app.get("/api/news", (req, res) => {
     res.json(cachedNews);
 });
 
-
-// ------------------------------
+// -----------------------------------------------------
 // SERVER STARTEN
-// ------------------------------
+// -----------------------------------------------------
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log("Server läuft auf Port", PORT);
