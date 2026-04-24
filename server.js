@@ -50,8 +50,7 @@ function detectCategory(item) {
 
 async function loadZollNews() {
     try {
-        const url = "https://www.sueddeutsche.de/wirtschaft/rss
-";
+        const url = "https://www.sueddeutsche.de/wirtschaft/rss";
 
         const response = await axios.get(url, { responseType: "text" });
         const xml = response.data;
