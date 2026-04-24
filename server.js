@@ -1,8 +1,7 @@
 // ======================================================
-// LUDARA Backend – FINAL CommonJS Version (Node 24 safe)
+// LUDARA Backend – FINAL CommonJS Version (Render Safe)
 // ======================================================
 
-require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const multer = require("multer");
@@ -213,5 +212,5 @@ app.get("/api/news", (req, res) => {
 // ======================================================
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log("LUDARA Backend (CommonJS) läuft auf Port", PORT);
+  console.log("LUDARA Backend läuft auf Port", PORT);
 });
