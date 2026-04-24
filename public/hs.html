@@ -123,6 +123,35 @@
 
 <script src="js/app.js"></script>
 
+<!-- GLOBAL AI RESULT -->
+<script>
+let lastAIResult = null;
+</script>
+
+<!-- DEBOUNCE -->
+<script>
+function debounce(fn, delay) {
+  let timer;
+  return function(...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn.apply(this, args), delay);
+  };
+}
+</script>
+
+<!-- AUTO-SUCHE -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const input = document.getElementById("hs-search");
+  if (input) {
+    input.addEventListener("input", debounce(() => {
+      const v = input.value.trim();
+      if (v.length >= 2) searchHS();
+    }, 400));
+  }
+});
+</script>
+
 <!-- TICKER -->
 <script>
 async function loadTicker() {
@@ -214,7 +243,8 @@ async function findAIHSCode() {
     });
 
     const data = await res.json();
-    renderTop5Table(data.top5);
+    lastAIResult = data;
+    renderTop5Table(data);
 
   } catch {
     container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Fehler bei der AI‑Analyse.</div></div>";
@@ -245,7 +275,8 @@ async function findAIHSCodeImage() {
     });
 
     const data = await res.json();
-    renderTop5Table(data.top5);
+    lastAIResult = data;
+    renderTop5Table(data);
 
   } catch {
     container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Fehler bei der Bildanalyse.</div></div>";
@@ -274,7 +305,8 @@ async function findAIHSCodeURL() {
     });
 
     const data = await res.json();
-    renderTop5Table(data.top5);
+    lastAIResult = data;
+    renderTop5Table(data);
 
   } catch {
     container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Fehler bei der URL‑Analyse.</div></div>";
@@ -284,8 +316,9 @@ async function findAIHSCodeURL() {
 
 <!-- TOP-5 TABELLE -->
 <script>
-function renderTop5Table(list) {
+function renderTop5Table(data) {
   const container = document.getElementById("ai-hs-result");
+  const list = data && data.top5 ? data.top5 : [];
 
   if (!list || !list.length) {
     container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Keine Ergebnisse.</div></div>";
@@ -315,6 +348,10 @@ function renderTop5Table(list) {
     `;
   });
 
+  const explanationHtml = data.explanation
+    ? `<div class="ai-explanation"><strong>Warum diese HS‑Codes?</strong><br>${data.explanation}</div>`
+    : "";
+
   container.innerHTML = `
     <table class="hs-table">
       <thead>
@@ -326,7 +363,104 @@ function renderTop5Table(list) {
       </thead>
       <tbody>${rows}</tbody>
     </table>
+    ${explanationHtml}
+    <div class="ai-export-actions">
+      <button class="btn-primary" onclick="exportAIToCSV()">CSV exportieren</button>
+      <button class="btn-primary" onclick="exportAIToPDF()">PDF drucken</button>
+    </div>
   `;
+}
+</script>
+
+<!-- EXPORT CSV -->
+<script>
+function exportAIToCSV() {
+  if (!lastAIResult || !lastAIResult.top5 || !lastAIResult.top5.length) {
+    alert("Keine AI‑Ergebnisse zum Exportieren.");
+    return;
+  }
+
+  const rows = [
+    ["HS-Code", "Beschreibung", "Wahrscheinlichkeit (%)"]
+  ];
+
+  lastAIResult.top5.forEach(item => {
+    const percent = Math.round(item.confidence * 100);
+    rows.push([item.code, item.description, String(percent)]);
+  });
+
+  const csvContent = rows.map(r => r.map(v => `"${(v || "").replace(/"/g, '""')}"`).join(";")).join("\n");
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "ai-hs-codes.csv";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+</script>
+
+<!-- EXPORT PDF -->
+<script>
+function exportAIToPDF() {
+  if (!lastAIResult || !lastAIResult.top5 || !lastAIResult.top5.length) {
+    alert("Keine AI‑Ergebnisse zum Exportieren.");
+    return;
+  }
+
+  let rows = "";
+  lastAIResult.top5.forEach(item => {
+    const percent = Math.round(item.confidence * 100);
+    rows += `
+      <tr>
+        <td>${item.code}</td>
+        <td>${item.description}</td>
+        <td>${percent}%</td>
+      </tr>
+    `;
+  });
+
+  const explanation = lastAIResult.explanation || "";
+
+  const html = `
+    <html>
+    <head>
+      <title>AI HS‑Codes Export</title>
+      <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        h1 { font-size: 20px; margin-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ccc; padding: 6px; font-size: 13px; }
+        th { background: #f3f4f6; }
+        .exp { margin-top: 12px; font-size: 13px; }
+      </style>
+    </head>
+    <body>
+      <h1>AI HS‑Code Analyse</h1>
+      <table>
+        <thead>
+          <tr>
+            <th>HS‑Code</th>
+            <th>Beschreibung</th>
+            <th>Wahrscheinlichkeit</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <div class="exp"><strong>Warum diese HS‑Codes?</strong><br>${explanation}</div>
+    </body>
+    </html>
+  `;
+
+  const win = window.open("", "_blank");
+  win.document.open();
+  win.document.write(html);
+  win.document.close();
+  win.focus();
+  win.print();
 }
 </script>
 
