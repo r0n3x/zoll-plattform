@@ -34,7 +34,7 @@ app.get("/api/hs-codes", (req, res) => {
 });
 
 /* -----------------------------------------------------
-   AUTOMATISCHE ZOLL-NEWS (MIT KATEGORIEN)
+   AUTOMATISCHE NEWS – SÜDDEUTSCHE ZEITUNG
 ----------------------------------------------------- */
 
 let cachedNews = [];
@@ -45,12 +45,13 @@ function detectCategory(item) {
 
     if (t.includes("eu") || d.includes("eu")) return "eu";
     if (t.includes("wirtschaft") || d.includes("wirtschaft")) return "wirtschaft";
-    return "zoll"; // Default
+    if (t.includes("politik") || d.includes("politik")) return "politik";
+    return "news";
 }
 
-async function loadZollNews() {
+async function loadSZNews() {
     try {
-        const url = "https://www.sueddeutsche.de/wirtschaft/rss";
+        const url = "https://www.sueddeutsche.de/news/rss";
 
         const response = await axios.get(url, { responseType: "text" });
         const xml = response.data;
@@ -63,31 +64,28 @@ async function loadZollNews() {
 
         const result = await parser.parseStringPromise(xml);
 
-        const items =
-            result?.rss?.channel?.item ||
-            result?.feed?.entry ||
-            [];
+        const items = result?.rss?.channel?.item || [];
 
         cachedNews = items.slice(0, 30).map(item => ({
             title: item.title || "",
-            link: item.link?.href || item.link || "",
-            date: item.pubDate || item.updated || "",
-            description: item.description || item.summary || "",
+            link: item.link || "",
+            date: item.pubDate || "",
+            description: item.description || "",
             category: detectCategory(item)
         }));
 
-        console.log("Zoll-News geladen:", cachedNews.length);
+        console.log("SZ-News geladen:", cachedNews.length);
 
     } catch (err) {
-        console.error("Fehler beim Laden der Zoll-News:", err);
+        console.error("Fehler beim Laden der SZ-News:", err);
     }
 }
 
 // Beim Start laden
-loadZollNews();
+loadSZNews();
 
 // Alle 30 Minuten aktualisieren
-setInterval(loadZollNews, 30 * 60 * 1000);
+setInterval(loadSZNews, 30 * 60 * 1000);
 
 app.get("/api/news", (req, res) => {
     res.json(cachedNews);
