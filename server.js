@@ -2,7 +2,6 @@ const express = require("express");
 const fs = require("fs");
 const path = require("path");
 const axios = require("axios");
-const xml2js = require("xml2js");
 
 const app = express();
 app.use(express.json());
@@ -34,7 +33,7 @@ app.get("/api/hs-codes", (req, res) => {
 });
 
 /* -----------------------------------------------------
-   NEWS – TAGESSCHAU (STABIL, KEINE BLOCKADEN)
+   NEWS – VIA RSS2JSON (GARANTIERT FUNKTIONIEREND)
 ----------------------------------------------------- */
 
 let cachedNews = [];
@@ -51,20 +50,11 @@ function detectCategory(item) {
 
 async function loadNews() {
     try {
-        const response = await axios.get("https://www.tagesschau.de/xml/rss2", {
-            responseType: "text"
-        });
+        const url =
+            "https://api.rss2json.com/v1/api.json?rss_url=https://www.tagesschau.de/xml/rss2";
 
-        const xml = response.data;
-
-        const parser = new xml2js.Parser({
-            explicitArray: false,
-            mergeAttrs: true,
-            strict: false
-        });
-
-        const result = await parser.parseStringPromise(xml);
-        const items = result?.rss?.channel?.item || [];
+        const response = await axios.get(url);
+        const items = response.data.items || [];
 
         cachedNews = items.slice(0, 25).map(item => ({
             title: item.title || "",
@@ -74,10 +64,10 @@ async function loadNews() {
             category: detectCategory(item)
         }));
 
-        console.log("Tagesschau-News geladen:", cachedNews.length);
+        console.log("News geladen:", cachedNews.length);
 
     } catch (err) {
-        console.error("Fehler beim Laden der Tagesschau-News:", err);
+        console.error("Fehler beim Laden der News:", err);
     }
 }
 
