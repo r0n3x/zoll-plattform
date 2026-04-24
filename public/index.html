@@ -121,16 +121,30 @@
         <div class="card" style="margin-top:20px;">
           <div class="card-header">
             <div class="card-title">HS‑Code Finder (AI)</div>
-            <div class="card-subtitle">Welchen HS‑Code hat ein unbekanntes Elektrogerät?</div>
+            <div class="card-subtitle">Text · Foto‑Upload · Bild‑URL</div>
           </div>
 
+          <!-- TEXT ANALYSE -->
           <div class="hs-search-bar">
-            <input id="ai-hs-input" class="hs-search-input" placeholder="z.B. tragbarer Bluetooth-Lautsprecher" />
-            <button class="btn-primary" onclick="findAIHSCode()">Finden</button>
+            <input id="ai-hs-input" class="hs-search-input" placeholder="Gerätebeschreibung eingeben..." />
+            <button class="btn-primary" onclick="findAIHSCode()">Analysieren</button>
           </div>
 
+          <!-- FOTO UPLOAD -->
+          <div class="upload-box">
+            <label for="ai-hs-file" class="upload-label">Foto hochladen</label>
+            <input type="file" id="ai-hs-file" accept="image/*" style="display:none;" onchange="findAIHSCodeImage()" />
+          </div>
+
+          <!-- BILD-URL -->
+          <div class="hs-search-bar" style="margin-top:10px;">
+            <input id="ai-hs-url" class="hs-search-input" placeholder="Bild‑URL eingeben..." />
+            <button class="btn-primary" onclick="findAIHSCodeURL()">Analysieren</button>
+          </div>
+
+          <!-- ERGEBNIS -->
           <div id="ai-hs-result" class="hs-results" style="margin-top:12px;">
-            <div class="hs-item"><div class="hs-desc">Beschreibe ein Elektrogerät…</div></div>
+            <div class="hs-item"><div class="hs-desc">AI bereit…</div></div>
           </div>
         </div>
 
@@ -254,7 +268,7 @@ async function searchHSHome() {
 }
 </script>
 
-<!-- AI HS-CODE FINDER -->
+<!-- AI HS-CODE FINDER (TEXT) -->
 <script>
 async function findAIHSCode() {
   const query = document.getElementById("ai-hs-input").value.trim();
@@ -265,27 +279,129 @@ async function findAIHSCode() {
     return;
   }
 
-  container.innerHTML = "<div class='hs-item'><div class='hs-desc'>AI analysiert das Gerät…</div></div>";
+  container.innerHTML = "<div class='hs-item'><div class='hs-desc'>AI analysiert…</div></div>";
 
   try {
-    const res = await fetch(`/api/ai-hs?q=${encodeURIComponent(query)}`);
+    const res = await fetch("/api/ai-hs", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ q: query })
+    });
+
     const data = await res.json();
-
-    if (!data || !data.code) {
-      container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Kein passender HS‑Code gefunden.</div></div>";
-      return;
-    }
-
-    container.innerHTML = `
-      <div class="hs-item">
-        <div class="hs-code"><strong>${data.code}</strong></div>
-        <div class="hs-desc">${data.description}</div>
-      </div>
-    `;
+    renderTop5Table(data.top5);
 
   } catch (err) {
     container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Fehler bei der AI‑Analyse.</div></div>";
   }
+}
+</script>
+
+<!-- AI HS-CODE FINDER (FOTO UPLOAD) -->
+<script>
+async function findAIHSCodeImage() {
+  const file = document.getElementById("ai-hs-file").files[0];
+  const container = document.getElementById("ai-hs-result");
+
+  if (!file) {
+    container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Bitte ein Bild auswählen.</div></div>";
+    return;
+  }
+
+  container.innerHTML = "<div class='hs-item'><div class='hs-desc'>AI analysiert Bild…</div></div>";
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  try {
+    const res = await fetch("/api/ai-hs-image", {
+      method: "POST",
+      body: formData
+    });
+
+    const data = await res.json();
+    renderTop5Table(data.top5);
+
+  } catch (err) {
+    container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Fehler bei der Bildanalyse.</div></div>";
+  }
+}
+</script>
+
+<!-- AI HS-CODE FINDER (BILD-URL) -->
+<script>
+async function findAIHSCodeURL() {
+  const url = document.getElementById("ai-hs-url").value.trim();
+  const container = document.getElementById("ai-hs-result");
+
+  if (!url) {
+    container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Bitte Bild‑URL eingeben.</div></div>";
+    return;
+  }
+
+  container.innerHTML = "<div class='hs-item'><div class='hs-desc'>AI analysiert Bild‑URL…</div></div>";
+
+  try {
+    const res = await fetch("/api/ai-hs-url", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url })
+    });
+
+    const data = await res.json();
+    renderTop5Table(data.top5);
+
+  } catch (err) {
+    container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Fehler bei der URL‑Analyse.</div></div>";
+  }
+}
+</script>
+
+<!-- TOP-5 TABELLE (HEATMAP) -->
+<script>
+function renderTop5Table(list) {
+  const container = document.getElementById("ai-hs-result");
+
+  if (!list || !list.length) {
+    container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Keine Ergebnisse.</div></div>";
+    return;
+  }
+
+  let rows = "";
+
+  list.forEach(item => {
+    const percent = Math.round(item.confidence * 100);
+
+    let color = "#ff4d4d"; // rot
+    if (percent >= 80) color = "#22c55e"; // grün
+    else if (percent >= 50) color = "#eab308"; // gelb
+
+    rows += `
+      <tr>
+        <td>${item.code}</td>
+        <td>${item.description}</td>
+        <td>
+          <div class="bar-container">
+            <div class="bar" style="width:${percent}%; background:${color};"></div>
+          </div>
+          <div class="bar-label">${percent}%</div>
+        </td>
+      </tr>
+    `;
+  });
+
+  container.innerHTML = `
+    <table class="hs-table">
+      <thead>
+        <tr>
+          <th>HS‑Code</th>
+          <th>Beschreibung</th>
+          <th>Wahrscheinlichkeit</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+  `;
 }
 </script>
 
