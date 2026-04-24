@@ -10,17 +10,23 @@ const fetch = require("node-fetch");
 const app = express();
 app.use(bodyParser.json());
 
+// ------------------------------------------------------
+// STATIC FRONTEND (public folder)
+// ------------------------------------------------------
+app.use(express.static("public")); 
+// Jetzt lädt Render automatisch index.html unter "/"
+
 const upload = multer({ storage: multer.memoryStorage() });
 
 // ------------------------------------------------------
-// ROOT ROUTE (Option A) – Fix für "Cannot GET /"
+// ROOT ROUTE (Option A)
 // ------------------------------------------------------
 app.get("/", (req, res) => {
-  res.send("LUDARA Backend läuft ✔");
+  res.sendFile(__dirname + "/public/index.html");
 });
 
 // ------------------------------------------------------
-// OpenAI API Key (Render Environment Variable)
+// OpenAI API Key
 // ------------------------------------------------------
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
