@@ -35,9 +35,18 @@ app.get("/api/hs-codes", (req, res) => {
     res.json(results);
 });
 
-// ------------------------------
-// AUTOMATISCHE ZOLL NEWS
-// ------------------------------
+// --- AUTO ZOLL NEWS IMPORT (ROBUST VERSION) --- //
+const Parser = require("rss-parser");
+
+// Parser im toleranten Modus (wichtig!)
+const parser = new Parser({
+    xml2js: {
+        strict: false,          // toleriert fehlerhafte XML-Attribute
+        normalizeTags: true,
+        mergeAttrs: true
+    }
+});
+
 let cachedNews = [];
 
 async function loadZollNews() {
@@ -46,16 +55,17 @@ async function loadZollNews() {
             "https://www.zoll.de/SiteGlobals/Functions/RSSFeed/DE/RSSNewsfeed.xml"
         );
 
-        cachedNews = feed.items.slice(0, 20).map(item => ({
+        cachedNews = (feed.items || []).slice(0, 20).map(item => ({
             title: item.title || "",
             link: item.link || "",
-            date: item.pubDate || "",
-            description: item.contentSnippet || ""
+            date: item.pubdate || item.pubDate || "",
+            description: item.description || item.contentSnippet || ""
         }));
 
-        console.log("Zoll-News aktualisiert:", cachedNews.length);
+        console.log("Zoll-News erfolgreich aktualisiert:", cachedNews.length);
+
     } catch (err) {
-        console.error("Fehler beim Laden der Zoll-News:", err);
+        console.error("Fehler beim Laden der Zoll-News (trotz tolerantem Parser):", err);
     }
 }
 
@@ -65,10 +75,11 @@ loadZollNews();
 // Alle 30 Minuten aktualisieren
 setInterval(loadZollNews, 30 * 60 * 1000);
 
-// API: Zoll-News
+// API
 app.get("/api/news", (req, res) => {
     res.json(cachedNews);
 });
+
 
 // ------------------------------
 // SERVER STARTEN
