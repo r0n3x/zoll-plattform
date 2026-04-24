@@ -34,62 +34,30 @@ app.get("/api/hs-codes", (req, res) => {
 });
 
 /* -----------------------------------------------------
-   AUTOMATISCHE NEWS – SÜDDEUTSCHE ZEITUNG
+   TEST-NEWS (GARANTIERT SICHTBAR)
 ----------------------------------------------------- */
 
-let cachedNews = [];
-
-function detectCategory(item) {
-    const t = (item.title || "").toLowerCase();
-    const d = (item.description || "").toLowerCase();
-
-    if (t.includes("eu") || d.includes("eu")) return "eu";
-    if (t.includes("wirtschaft") || d.includes("wirtschaft")) return "wirtschaft";
-    if (t.includes("politik") || d.includes("politik")) return "politik";
-    return "news";
-}
-
-async function loadSZNews() {
-    try {
-        const url = "https://www.sueddeutsche.de/news/rss";
-
-        const response = await axios.get(url, { responseType: "text" });
-        const xml = response.data;
-
-        const parser = new xml2js.Parser({
-            explicitArray: false,
-            mergeAttrs: true,
-            strict: false
-        });
-
-        const result = await parser.parseStringPromise(xml);
-
-        const items = result?.rss?.channel?.item || [];
-
-        cachedNews = items.slice(0, 30).map(item => ({
-            title: item.title || "",
-            link: item.link || "",
-            date: item.pubDate || "",
-            description: item.description || "",
-            category: detectCategory(item)
-        }));
-
-        console.log("SZ-News geladen:", cachedNews.length);
-
-    } catch (err) {
-        console.error("Fehler beim Laden der SZ-News:", err);
-    }
-}
-
-// Beim Start laden
-loadSZNews();
-
-// Alle 30 Minuten aktualisieren
-setInterval(loadSZNews, 30 * 60 * 1000);
+let cachedNews = [
+  {
+    title: "LUDARA Testmeldung 1",
+    link: "https://example.com",
+    date: new Date().toISOString(),
+    description: "Dies ist eine automatisch generierte Testmeldung.",
+    category: "news"
+  },
+  {
+    title: "LUDARA Testmeldung 2",
+    link: "https://example.com",
+    date: new Date().toISOString(),
+    description: "Wenn du das hier siehst, funktioniert dein Frontend.",
+    category: "news"
+  }
+];
 
 app.get("/api/news", (req, res) => {
-    res.json(cachedNews);
+  res.json(cachedNews);
 });
+
 
 /* -----------------------------------------------------
    SERVER STARTEN
