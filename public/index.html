@@ -55,6 +55,7 @@
           <a href="#">Passwort vergessen?</a>
         </div>
       </div>
+
     </header>
 
     <!-- CONTENT -->
@@ -102,6 +103,16 @@
           <div id="hs-results-home" class="hs-results">
             <div class="hs-item"><div class="hs-desc">Suche z.B. „Computer“</div></div>
           </div>
+        </div>
+
+        <!-- KALENDER -->
+        <div class="card" style="margin-top:20px;">
+          <div class="card-header">
+            <div class="card-title">Kalender</div>
+            <div class="card-subtitle">Aktueller Monat</div>
+          </div>
+
+          <div id="calendar"></div>
         </div>
 
       </aside>
@@ -182,6 +193,52 @@ async function loadTicker() {
 }
 
 document.addEventListener("DOMContentLoaded", loadTicker);
+</script>
+
+<!-- KALENDER SCRIPT -->
+<script>
+function buildCalendar() {
+  const calendar = document.getElementById("calendar");
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth();
+
+  const monthNames = [
+    "Januar","Februar","März","April","Mai","Juni",
+    "Juli","August","September","Oktober","November","Dezember"
+  ];
+
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  let html = `
+    <div class="cal-header">${monthNames[month]} ${year}</div>
+    <div class="cal-grid">
+      <div class="cal-dayname">Mo</div>
+      <div class="cal-dayname">Di</div>
+      <div class="cal-dayname">Mi</div>
+      <div class="cal-dayname">Do</div>
+      <div class="cal-dayname">Fr</div>
+      <div class="cal-dayname">Sa</div>
+      <div class="cal-dayname">So</div>
+  `;
+
+  let start = firstDay === 0 ? 6 : firstDay - 1;
+
+  for (let i = 0; i < start; i++) {
+    html += `<div class="cal-empty"></div>`;
+  }
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const isToday = d === today.getDate();
+    html += `<div class="cal-day ${isToday ? "cal-today" : ""}">${d}</div>`;
+  }
+
+  html += `</div>`;
+  calendar.innerHTML = html;
+}
+
+document.addEventListener("DOMContentLoaded", buildCalendar);
 </script>
 
 </body>
