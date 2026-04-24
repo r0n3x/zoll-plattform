@@ -96,10 +96,12 @@
         <!-- HS QUICK SEARCH -->
         <div class="card">
           <div class="card-header"><div class="card-title">HS‑Codes</div></div>
+
           <div class="hs-search-bar">
             <input id="hs-search-home" class="hs-search-input" placeholder="HS‑Code oder Begriff..." />
             <button class="btn-primary" onclick="searchHSHome()">Suche</button>
           </div>
+
           <div id="hs-results-home" class="hs-results">
             <div class="hs-item"><div class="hs-desc">Suche z.B. „Computer“</div></div>
           </div>
@@ -193,6 +195,46 @@ async function loadTicker() {
 }
 
 document.addEventListener("DOMContentLoaded", loadTicker);
+</script>
+
+<!-- HS-CODE SUCHE -->
+<script>
+async function searchHSHome() {
+  const query = document.getElementById("hs-search-home").value.trim();
+  const container = document.getElementById("hs-results-home");
+
+  if (!query) {
+    container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Bitte Suchbegriff eingeben.</div></div>";
+    return;
+  }
+
+  container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Suche läuft...</div></div>";
+
+  try {
+    const res = await fetch(`/api/hs-codes?q=${encodeURIComponent(query)}`);
+    const data = await res.json();
+
+    if (!data.length) {
+      container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Keine Treffer gefunden.</div></div>";
+      return;
+    }
+
+    let html = "";
+    data.forEach(item => {
+      html += `
+        <div class="hs-item">
+          <div class="hs-code"><strong>${item.code}</strong></div>
+          <div class="hs-desc">${item.description}</div>
+        </div>
+      `;
+    });
+
+    container.innerHTML = html;
+
+  } catch (err) {
+    container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Fehler beim Laden.</div></div>";
+  }
+}
 </script>
 
 <!-- KALENDER SCRIPT -->
