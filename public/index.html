@@ -35,10 +35,13 @@
   <!-- MAIN AREA -->
   <div class="main-area">
 
-    <!-- TOPBAR MIT TICKER -->
+    <!-- TOPBAR MIT VISUELLEM TICKER -->
     <header class="topbar">
+
       <div class="news-ticker">
-        <div id="ticker-content">Lade News...</div>
+        <div id="ticker-wrapper">
+          <div id="ticker-content"></div>
+        </div>
       </div>
 
       <div class="topbar-right">
@@ -145,27 +148,39 @@ async function loadHomeNews() {
 document.addEventListener("DOMContentLoaded", loadHomeNews);
 </script>
 
-<!-- TICKER -->
+<!-- VISUELLER TICKER -->
 <script>
 async function loadTicker() {
-  const ticker = document.getElementById("ticker-content");
-  ticker.textContent = "Lade News...";
+  const container = document.getElementById("ticker-content");
+  container.innerHTML = "<div class='ticker-item'>Lade News...</div>";
 
   try {
     const res = await fetch("/api/news");
     const news = await res.json();
 
     if (!news.length) {
-      ticker.textContent = "Keine News verfügbar.";
+      container.innerHTML = "<div class='ticker-item'>Keine News verfügbar</div>";
       return;
     }
 
-    ticker.textContent = news.map(n => n.title).join("   •   ");
+    let html = "";
+    news.forEach(n => {
+      html += `
+        <div class="ticker-item">
+          <div class="ticker-cat">${n.category || "News"}</div>
+          <div class="ticker-title">${n.title}</div>
+          <div class="ticker-date">${new Date(n.date).toLocaleDateString("de-DE")}</div>
+        </div>
+      `;
+    });
+
+    container.innerHTML = html;
 
   } catch (err) {
-    ticker.textContent = "Fehler beim Laden.";
+    container.innerHTML = "<div class='ticker-item'>Fehler beim Laden</div>";
   }
 }
+
 document.addEventListener("DOMContentLoaded", loadTicker);
 </script>
 
