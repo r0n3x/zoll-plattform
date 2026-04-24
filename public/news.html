@@ -69,20 +69,34 @@
     <main class="content">
 
       <section>
+
+        <!-- NEWS HEADER -->
         <div class="card">
           <div class="card-header">
             <div>
-              <div class="card-title">Zoll News</div>
+              <div class="card-title">Zoll‑News</div>
               <div class="card-subtitle">Automatisch aktualisierte Nachrichten vom deutschen Zoll</div>
             </div>
           </div>
 
+          <!-- KATEGORIEN -->
+          <div style="padding: 16px;">
+            <div class="category-bar">
+              <button class="category-btn active" data-cat="all">Alle</button>
+              <button class="category-btn" data-cat="zoll">Zoll</button>
+              <button class="category-btn" data-cat="wirtschaft">Wirtschaft</button>
+              <button class="category-btn" data-cat="eu">EU</button>
+            </div>
+          </div>
+
+          <!-- NEWS LIST -->
           <div id="news-list" class="list">
             <div class="list-item">
               <div class="list-item-title">News werden geladen...</div>
             </div>
           </div>
         </div>
+
       </section>
 
     </main>
@@ -105,21 +119,7 @@ async function loadNews() {
       return;
     }
 
-    let html = "";
-    news.forEach(item => {
-      html += `
-        <div class="list-item">
-          <div class="list-item-title">${item.title}</div>
-          <div class="list-item-meta">${new Date(item.date).toLocaleDateString("de-DE")}</div>
-          <div class="list-item-desc">${item.description}</div>
-          <a href="${item.link}" target="_blank" class="btn-primary" style="margin-top:10px; display:inline-block;">
-            Weiterlesen
-          </a>
-        </div>
-      `;
-    });
-
-    container.innerHTML = html;
+    renderNews(news);
 
   } catch (err) {
     console.error(err);
@@ -127,8 +127,71 @@ async function loadNews() {
   }
 }
 
-document.addEventListener("DOMContentLoaded", loadNews);
+function renderNews(news) {
+  const container = document.getElementById("news-list");
+  const activeCat = document.querySelector(".category-btn.active").dataset.cat;
+
+  const filtered = news.filter(n => {
+    if (activeCat === "all") return true;
+    if (!n.category) return false;
+    return n.category === activeCat;
+  });
+
+  if (!filtered.length) {
+    container.innerHTML = "<div class='list-item'><div class='list-item-title'>Keine News in dieser Kategorie.</div></div>";
+    return;
+  }
+
+  let html = "";
+  filtered.forEach(item => {
+    html += `
+      <div class="list-item">
+        <div class="list-item-title">${item.title}</div>
+        <div class="list-item-meta">${new Date(item.date).toLocaleDateString("de-DE")}</div>
+        <div class="list-item-desc">${item.description}</div>
+        <a href="${item.link}" target="_blank" class="btn-primary" style="margin-top:10px; display:inline-block;">
+          Weiterlesen
+        </a>
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  loadNews();
+
+  document.querySelectorAll(".category-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".category-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      loadNews();
+    });
+  });
+});
 </script>
+
+<style>
+.category-bar {
+  display: flex;
+  gap: 10px;
+}
+
+.category-btn {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: none;
+  background: #e5e7eb;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.category-btn.active {
+  background: #0094FF;
+  color: white;
+}
+</style>
 
 </body>
 </html>
