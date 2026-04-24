@@ -1,7 +1,8 @@
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
-const Parser = require("rss-parser");   // <— EINMAL, korrekt
+const axios = require("axios");
+const xml2js = require("xml2js");
 
 const app = express();
 app.use(express.json());
@@ -34,32 +35,38 @@ app.get("/api/hs-codes", (req, res) => {
 });
 
 // -----------------------------------------------------
-// AUTOMATISCHE ZOLL NEWS (ROBUST VERSION)
+// AUTOMATISCHE ZOLL NEWS (MANUELLER XML-PARSER)
 // -----------------------------------------------------
-const parser = new Parser({
-    xml2js: {
-        strict: false,          // toleriert fehlerhafte XML-Attribute
-        normalizeTags: true,
-        mergeAttrs: true
-    }
-});
-
 let cachedNews = [];
 
 async function loadZollNews() {
     try {
-        const feed = await parser.parseURL(
-            "https://www.zoll.de/SiteGlobals/Functions/RSSFeed/DE/RSSNewsfeed.xml"
-        );
+        const url = "https://www.zoll.de/SiteGlobals/Functions/RSSFeed/DE/RSSNewsfeed.xml";
 
-        cachedNews = (feed.items || []).slice(0, 20).map(item => ({
+        const response = await axios.get(url, { responseType: "text" });
+        const xml = response.data;
+
+        const parser = new xml2js.Parser({
+            explicitArray: false,
+            mergeAttrs: true,
+            strict: false
+        });
+
+        const result = await parser.parseStringPromise(xml);
+
+        const items =
+            result?.rss?.channel?.item ||
+            result?.feed?.entry ||
+            [];
+
+        cachedNews = items.slice(0, 20).map(item => ({
             title: item.title || "",
-            link: item.link || "",
-            date: item.pubdate || item.pubDate || "",
-            description: item.description || item.contentSnippet || ""
+            link: item.link?.href || item.link || "",
+            date: item.pubDate || item.updated || "",
+            description: item.description || item.summary || ""
         }));
 
-        console.log("Zoll-News aktualisiert:", cachedNews.length);
+        console.log("Zoll-News geladen:", cachedNews.length);
 
     } catch (err) {
         console.error("Fehler beim Laden der Zoll-News:", err);
