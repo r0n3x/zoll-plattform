@@ -2,52 +2,47 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <title>LUDARA – HS-Codes</title>
+  <title>LUDARA – HS‑Codes</title>
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
 <div class="app-shell">
 
+  <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sidebar-logo">
-      <div>
-        <img src="img/ludara-logo.png" alt="LUDARA ai Logo" />
-      </div>
+      <img src="img/logo.png" class="logo-img" />
       <div class="sidebar-logo-text">
         <div class="sidebar-logo-title">LUDARA ai</div>
-        <div class="sidebar-logo-sub">Zoll · HS-Codes · Community</div>
+        <div class="sidebar-logo-sub">Zoll · HS‑Codes · Community</div>
       </div>
     </div>
 
     <div>
       <div class="nav-section-title">Navigation</div>
       <nav class="nav-list">
-        <a href="index.html" class="nav-link">
-          <span class="icon">🏠</span><span>Home</span>
-        </a>
-        <a href="profile.html" class="nav-link">
-          <span class="icon">👤</span><span>Profil</span>
-        </a>
-        <a href="feed.html" class="nav-link">
-          <span class="icon">💬</span><span>Community</span>
-        </a>
-        <a href="news.html" class="nav-link">
-          <span class="icon">📰</span><span>News</span>
-        </a>
-        <a href="hs.html" class="nav-link active">
-          <span class="icon">🔍</span><span>HS-Codes</span>
-        </a>
+        <a href="index.html" class="nav-link"><span class="icon">🏠</span>Home</a>
+        <a href="profile.html" class="nav-link"><span class="icon">👤</span>Profil</a>
+        <a href="feed.html" class="nav-link"><span class="icon">💬</span>Community</a>
+        <a href="news.html" class="nav-link"><span class="icon">📰</span>News</a>
+        <a href="hs.html" class="nav-link active"><span class="icon">🔍</span>HS‑Codes</a>
       </nav>
     </div>
 
-    <div class="sidebar-footer">
-      © LUDARA ai · 2026
-    </div>
+    <div class="sidebar-footer">© LUDARA ai · 2026</div>
   </aside>
 
+  <!-- MAIN AREA -->
   <div class="main-area">
+
+    <!-- TOPBAR MIT TICKER -->
     <header class="topbar">
-      <div class="topbar-left">HS-Codes</div>
+      <div class="news-ticker">
+        <div id="ticker-wrapper">
+          <div id="ticker-content"></div>
+        </div>
+      </div>
+
       <div class="topbar-right">
         <div class="topbar-login">
           <input type="text" id="login-email" placeholder="E-Mail oder Benutzername" />
@@ -61,76 +56,279 @@
       </div>
     </header>
 
-    <main class="content-full">
-      <div class="card">
-        <div class="card-header">
-          <div>
-            <div class="card-title">HS-Code Suche</div>
-            <div class="card-subtitle">
-              Durchsuche deine komplette HS-Datenbank (hs_2026.json) über das Backend.
-            </div>
+    <!-- CONTENT -->
+    <main class="content">
+
+      <!-- LEFT COLUMN -->
+      <section>
+
+        <!-- HS SEARCH -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">HS‑Codes durchsuchen</div>
+            <div class="card-subtitle">Suche nach Code oder Beschreibung</div>
+          </div>
+
+          <div class="hs-search-bar">
+            <input id="hs-search" class="hs-search-input" placeholder="z.B. 8518 oder Lautsprecher" />
+            <button class="btn-primary" onclick="searchHS()">Suche</button>
+          </div>
+
+          <div id="hs-results" class="hs-results" style="margin-top:12px;">
+            <div class="hs-item"><div class="hs-desc">Bitte Suchbegriff eingeben…</div></div>
           </div>
         </div>
 
-        <div class="hs-search-bar">
-          <input
-            id="hs-search-page"
-            class="hs-search-input"
-            placeholder="HS-Code (z.B. 8471) oder Beschreibung (z.B. Computer)..."
-          />
-          <button class="btn-primary" onclick="searchHSPage()">Suchen</button>
-        </div>
+      </section>
 
-        <div id="hs-results-page" class="hs-results">
-          <div class="hs-item">
-            <div class="hs-code">Hinweis</div>
-            <div class="hs-desc">
-              Die Suche erfolgt über <code>/api/hs-codes</code> und nutzt deine große JSON-Datei im Backend.
-            </div>
+      <!-- RIGHT COLUMN -->
+      <aside>
+
+        <!-- AI HS-CODE FINDER -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">HS‑Code Finder (AI)</div>
+            <div class="card-subtitle">Text · Foto‑Upload · Bild‑URL</div>
+          </div>
+
+          <!-- TEXT -->
+          <div class="hs-search-bar">
+            <input id="ai-hs-input" class="hs-search-input" placeholder="Gerätebeschreibung eingeben…" />
+            <button class="btn-primary" onclick="findAIHSCode()">Analysieren</button>
+          </div>
+
+          <!-- FOTO UPLOAD -->
+          <div class="upload-box">
+            <label for="ai-hs-file" class="upload-label">Foto hochladen</label>
+            <input type="file" id="ai-hs-file" accept="image/*" style="display:none;" onchange="findAIHSCodeImage()" />
+          </div>
+
+          <!-- BILD-URL -->
+          <div class="hs-search-bar" style="margin-top:10px;">
+            <input id="ai-hs-url" class="hs-search-input" placeholder="Bild‑URL eingeben…" />
+            <button class="btn-primary" onclick="findAIHSCodeURL()">Analysieren</button>
+          </div>
+
+          <!-- ERGEBNIS -->
+          <div id="ai-hs-result" class="hs-results" style="margin-top:12px;">
+            <div class="hs-item"><div class="hs-desc">AI bereit…</div></div>
           </div>
         </div>
-      </div>
+
+      </aside>
+
     </main>
   </div>
 </div>
 
 <script src="js/app.js"></script>
+
+<!-- TICKER -->
 <script>
-async function searchHSPage() {
-  const input = document.getElementById("hs-search-page");
-  const container = document.getElementById("hs-results-page");
-  const q = input.value.trim();
-  if (!q) {
+async function loadTicker() {
+  const container = document.getElementById("ticker-content");
+  container.innerHTML = "<div class='ticker-item'>Lade News…</div>";
+
+  try {
+    const res = await fetch("/api/news");
+    const news = await res.json();
+
+    let html = "";
+    news.forEach(n => {
+      html += `
+        <div class="ticker-item">
+          <div class="ticker-cat">${n.category || "News"}</div>
+          <div class="ticker-title">${n.title}</div>
+          <div class="ticker-date">${new Date(n.date).toLocaleDateString("de-DE")}</div>
+        </div>
+      `;
+    });
+
+    container.innerHTML = html;
+
+  } catch {
+    container.innerHTML = "<div class='ticker-item'>Fehler beim Laden</div>";
+  }
+}
+document.addEventListener("DOMContentLoaded", loadTicker);
+</script>
+
+<!-- HS SEARCH -->
+<script>
+async function searchHS() {
+  const query = document.getElementById("hs-search").value.trim();
+  const container = document.getElementById("hs-results");
+
+  if (!query) {
     container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Bitte Suchbegriff eingeben.</div></div>";
     return;
   }
-  container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Suche läuft...</div></div>";
+
+  container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Suche läuft…</div></div>";
+
   try {
-    const res = await fetch(`/api/hs-codes?q=${encodeURIComponent(q)}`);
-    if (!res.ok) {
-      container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Fehler bei der Suche.</div></div>";
-      return;
-    }
+    const res = await fetch(`/api/hs-codes?q=${encodeURIComponent(query)}`);
     const data = await res.json();
+
     if (!data.length) {
       container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Keine Treffer gefunden.</div></div>";
       return;
     }
+
     let html = "";
     data.forEach(item => {
       html += `
         <div class="hs-item">
-          <div class="hs-code">${item.code}</div>
+          <div class="hs-code"><strong>${item.code}</strong></div>
           <div class="hs-desc">${item.description}</div>
         </div>
       `;
     });
+
     container.innerHTML = html;
-  } catch (err) {
-    console.error(err);
-    container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Serverfehler.</div></div>";
+
+  } catch {
+    container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Fehler beim Laden.</div></div>";
   }
 }
 </script>
+
+<!-- AI TEXT -->
+<script>
+async function findAIHSCode() {
+  const query = document.getElementById("ai-hs-input").value.trim();
+  const container = document.getElementById("ai-hs-result");
+
+  if (!query) {
+    container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Bitte Beschreibung eingeben.</div></div>";
+    return;
+  }
+
+  container.innerHTML = "<div class='hs-item'><div class='hs-desc'>AI analysiert…</div></div>";
+
+  try {
+    const res = await fetch("/api/ai-hs", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ q: query })
+    });
+
+    const data = await res.json();
+    renderTop5Table(data.top5);
+
+  } catch {
+    container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Fehler bei der AI‑Analyse.</div></div>";
+  }
+}
+</script>
+
+<!-- AI IMAGE -->
+<script>
+async function findAIHSCodeImage() {
+  const file = document.getElementById("ai-hs-file").files[0];
+  const container = document.getElementById("ai-hs-result");
+
+  if (!file) {
+    container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Bitte ein Bild auswählen.</div></div>";
+    return;
+  }
+
+  container.innerHTML = "<div class='hs-item'><div class='hs-desc'>AI analysiert Bild…</div></div>";
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  try {
+    const res = await fetch("/api/ai-hs-image", {
+      method: "POST",
+      body: formData
+    });
+
+    const data = await res.json();
+    renderTop5Table(data.top5);
+
+  } catch {
+    container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Fehler bei der Bildanalyse.</div></div>";
+  }
+}
+</script>
+
+<!-- AI URL -->
+<script>
+async function findAIHSCodeURL() {
+  const url = document.getElementById("ai-hs-url").value.trim();
+  const container = document.getElementById("ai-hs-result");
+
+  if (!url) {
+    container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Bitte Bild‑URL eingeben.</div></div>";
+    return;
+  }
+
+  container.innerHTML = "<div class='hs-item'><div class='hs-desc'>AI analysiert Bild‑URL…</div></div>";
+
+  try {
+    const res = await fetch("/api/ai-hs-url", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url })
+    });
+
+    const data = await res.json();
+    renderTop5Table(data.top5);
+
+  } catch {
+    container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Fehler bei der URL‑Analyse.</div></div>";
+  }
+}
+</script>
+
+<!-- TOP-5 TABELLE -->
+<script>
+function renderTop5Table(list) {
+  const container = document.getElementById("ai-hs-result");
+
+  if (!list || !list.length) {
+    container.innerHTML = "<div class='hs-item'><div class='hs-desc'>Keine Ergebnisse.</div></div>";
+    return;
+  }
+
+  let rows = "";
+
+  list.forEach(item => {
+    const percent = Math.round(item.confidence * 100);
+
+    let color = "#ff4d4d"; 
+    if (percent >= 80) color = "#22c55e";
+    else if (percent >= 50) color = "#eab308";
+
+    rows += `
+      <tr>
+        <td>${item.code}</td>
+        <td>${item.description}</td>
+        <td>
+          <div class="bar-container">
+            <div class="bar" style="width:${percent}%; background:${color};"></div>
+          </div>
+          <div class="bar-label">${percent}%</div>
+        </td>
+      </tr>
+    `;
+  });
+
+  container.innerHTML = `
+    <table class="hs-table">
+      <thead>
+        <tr>
+          <th>HS‑Code</th>
+          <th>Beschreibung</th>
+          <th>Wahrscheinlichkeit</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+  `;
+}
+</script>
+
 </body>
 </html>
