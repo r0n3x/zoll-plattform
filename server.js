@@ -8,9 +8,9 @@ const app = express();
 app.use(express.json());
 app.use(express.static("public"));
 
-// -----------------------------------------------------
-// HS-CODE DATEN LADEN
-// -----------------------------------------------------
+/* -----------------------------------------------------
+   HS-CODE DATEN LADEN
+----------------------------------------------------- */
 let hsCodes = [];
 
 try {
@@ -22,7 +22,6 @@ try {
     console.error("Fehler beim Laden der HS-Daten:", err);
 }
 
-// API: HS-Code Suche
 app.get("/api/hs-codes", (req, res) => {
     const q = (req.query.q || "").toLowerCase();
 
@@ -34,10 +33,20 @@ app.get("/api/hs-codes", (req, res) => {
     res.json(results);
 });
 
-// -----------------------------------------------------
-// AUTOMATISCHE ZOLL NEWS (MANUELLER XML-PARSER)
-// -----------------------------------------------------
+/* -----------------------------------------------------
+   AUTOMATISCHE ZOLL-NEWS (MIT KATEGORIEN)
+----------------------------------------------------- */
+
 let cachedNews = [];
+
+function detectCategory(item) {
+    const t = (item.title || "").toLowerCase();
+    const d = (item.description || "").toLowerCase();
+
+    if (t.includes("eu") || d.includes("eu")) return "eu";
+    if (t.includes("wirtschaft") || d.includes("wirtschaft")) return "wirtschaft";
+    return "zoll"; // Default
+}
 
 async function loadZollNews() {
     try {
@@ -59,11 +68,12 @@ async function loadZollNews() {
             result?.feed?.entry ||
             [];
 
-        cachedNews = items.slice(0, 20).map(item => ({
+        cachedNews = items.slice(0, 30).map(item => ({
             title: item.title || "",
             link: item.link?.href || item.link || "",
             date: item.pubDate || item.updated || "",
-            description: item.description || item.summary || ""
+            description: item.description || item.summary || "",
+            category: detectCategory(item)
         }));
 
         console.log("Zoll-News geladen:", cachedNews.length);
@@ -79,14 +89,13 @@ loadZollNews();
 // Alle 30 Minuten aktualisieren
 setInterval(loadZollNews, 30 * 60 * 1000);
 
-// API: Zoll-News
 app.get("/api/news", (req, res) => {
     res.json(cachedNews);
 });
 
-// -----------------------------------------------------
-// SERVER STARTEN
-// -----------------------------------------------------
+/* -----------------------------------------------------
+   SERVER STARTEN
+----------------------------------------------------- */
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log("Server läuft auf Port", PORT);
