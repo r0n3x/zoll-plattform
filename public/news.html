@@ -4,37 +4,103 @@
     <meta charset="UTF-8">
     <title>Zoll News – LUDARA</title>
     <link rel="stylesheet" href="style.css">
+
+    <style>
+        /* Falls style.css noch kein News-Design enthält */
+        .news-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .news-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .news-card h2 {
+            margin: 0 0 10px;
+            font-size: 22px;
+        }
+
+        .news-card .date {
+            color: #777;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .news-card .btn {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 14px;
+            background: #0094FF;
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f7fa;
+            padding: 40px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #555;
+            margin-bottom: 30px;
+        }
+    </style>
 </head>
 
 <body>
-    <div class="container">
-        <h1>Zoll News</h1>
-        <p class="subtitle">Automatisch aktualisierte Nachrichten vom deutschen Zoll</p>
+    <h1>Zoll News</h1>
+    <p class="subtitle">Automatisch aktualisierte Nachrichten vom deutschen Zoll</p>
 
-        <div id="news-container" class="news-list"></div>
-    </div>
+    <div id="news-container" class="news-list"></div>
 
     <script>
         async function loadNews() {
-            const res = await fetch("/api/news");
-            const news = await res.json();
+            try {
+                const res = await fetch("/api/news");
+                const news = await res.json();
 
-            const container = document.getElementById("news-container");
-            container.innerHTML = "";
+                const container = document.getElementById("news-container");
+                container.innerHTML = "";
 
-            news.forEach(item => {
-                const card = document.createElement("div");
-                card.className = "news-card";
+                if (!news.length) {
+                    container.innerHTML = "<p>Keine News verfügbar.</p>";
+                    return;
+                }
 
-                card.innerHTML = `
-                    <h2>${item.title}</h2>
-                    <p class="date">${new Date(item.date).toLocaleDateString("de-DE")}</p>
-                    <p>${item.description}</p>
-                    <a href="${item.link}" target="_blank" class="btn">Weiterlesen</a>
-                `;
+                news.forEach(item => {
+                    const card = document.createElement("div");
+                    card.className = "news-card";
 
-                container.appendChild(card);
-            });
+                    card.innerHTML = `
+                        <h2>${item.title}</h2>
+                        <p class="date">${new Date(item.date).toLocaleDateString("de-DE")}</p>
+                        <p>${item.description}</p>
+                        <a href="${item.link}" target="_blank" class="btn">Weiterlesen</a>
+                    `;
+
+                    container.appendChild(card);
+                });
+
+            } catch (err) {
+                console.error("Fehler beim Laden der News:", err);
+                document.getElementById("news-container").innerHTML =
+                    "<p>Fehler beim Laden der News.</p>";
+            }
         }
 
         loadNews();
