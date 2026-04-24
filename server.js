@@ -34,29 +34,53 @@ app.get("/api/hs-codes", (req, res) => {
 });
 
 /* -----------------------------------------------------
-   TEST-NEWS (GARANTIERT SICHTBAR)
+   NEWS – SÜDDEUTSCHE ZEITUNG (MIT USER-AGENT)
 ----------------------------------------------------- */
 
-let cachedNews = [
-  {
-    title: "LUDARA Testmeldung 1",
-    link: "https://example.com",
-    date: new Date().toISOString(),
-    description: "Dies ist eine automatisch generierte Testmeldung.",
-    category: "news"
-  },
-  {
-    title: "LUDARA Testmeldung 2",
-    link: "https://example.com",
-    date: new Date().toISOString(),
-    description: "Wenn du das hier siehst, funktioniert dein Frontend.",
-    category: "news"
+let cachedNews = [];
+
+async function loadSZNews() {
+  try {
+    const response = await axios.get("https://www.sueddeutsche.de/news/rss", {
+      responseType: "text",
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+      }
+    });
+
+    const xml = response.data;
+
+    const parser = new xml2js.Parser({
+      explicitArray: false,
+      mergeAttrs: true,
+      strict: false
+    });
+
+    const result = await parser.parseStringPromise(xml);
+    const items = result?.rss?.channel?.item || [];
+
+    cachedNews = items.slice(0, 20).map(item => ({
+      title: item.title || "",
+      link: item.link || "",
+      date: item.pubDate || "",
+      description: item.description || "",
+      category: "news"
+    }));
+
+    console.log("SZ-News geladen:", cachedNews.length);
+
+  } catch (err) {
+    console.error("Fehler beim Laden der SZ-News:", err);
   }
-];
+}
+
+loadSZNews();
+setInterval(loadSZNews, 30 * 60 * 1000);
 
 app.get("/api/news", (req, res) => {
   res.json(cachedNews);
 });
+
 
 
 /* -----------------------------------------------------
